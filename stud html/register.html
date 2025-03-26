@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #92929288;
+        }
+        .container {
+            background: whitesmoke;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            border: #4d5572  2px solid;
+            
+        }
+        .container h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            background-color: #4d5572;
+            border-radius: 5px 5px 0 0;
+            padding: 5px;
+            color: white;
+        }
+        .container .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .container .form-group .form-field {
+            width: 48%;
+        }
+        .container label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+            text-align: left;
+        }
+        .container input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .container button {
+            width: 100%;
+            padding: 15px;
+            background-color: #4d5572;
+            color: whitesmoke;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        .container button:hover {
+            background-color: #4d5572b0;
+            color: black;
+        }
+        .container .back-to-login {
+            margin-top: 10px;
+            display: block;
+            color: black;
+            text-decoration: none;
+        }
+        .container .back-to-login:hover {
+            text-decoration: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Sign Up</h2>
+        <form method="POST" action="register_process.php">
+            <div class="form-group">
+                <div class="form-field">
+                    <label for="id_number">ID Number:</label>
+                    <input type="text" id="id_number" name="id_number" required>
+                </div>
+                <div class="form-field">
+                    <label for="last_name">Last Name:</label>
+                    <input type="text" id="last_name" name="last_name" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-field">
+                    <label for="first_name">First Name:</label>
+                    <input type="text" id="first_name" name="first_name" required>
+                </div>
+                <div class="form-field">
+                    <label for="middle_name">Middle Name:</label>
+                    <input type="text" id="middle_name" name="middle_name">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-field">
+                    <label for="course_level">Course Level:</label>
+                    <input type="text" id="course_level" name="course_level" required>
+                </div>
+                <div class="form-field">
+                    <label for="course">Course:</label>
+                    <input type="text" id="course" name="course" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-field">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-field">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-field">
+                    <label for="repeat_password">Repeat Password:</label>
+                    <input type="password" id="repeat_password" name="repeat_password" required>
+                </div>
+                <div class="form-field">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-field" style="width: 100%;">
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" name="address" required>
+                </div>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+</body>
+</html>

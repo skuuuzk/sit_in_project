@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History Information</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #92929288;
+        }
+        .nav-container {
+            width: 237px;
+            background-color: whitesmoke;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            border-right: #4d5572  2px solid;
+        }
+
+        .nav-container a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            margin: 30px 0;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-container a i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .nav-container a:hover {
+            background-color: #929292;
+            color: white;
+        }
+
+        .nav-container a span {
+            font-weight: normal;
+        }
+
+        .nav-container a.active {
+            font-weight: bold;
+            background-color: #e0e0e0;
+        }
+        .logo {
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .logo img {
+            width: 80px;
+        }
+        .container {
+            margin:auto; /* Adjust for fixed sidebar */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+        }
+
+        .form-container {
+            background: whitesmoke;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+            border: 3px solid #929292;
+        }
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 5px;
+            background-color: #4d5572;
+            border-radius: 5px 5px 0 0;
+            color: white;
+            
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+        select, button {
+            width: 78%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input{
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #929292;
+            color: whitesmoke;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;border-radius: 10px;
+            
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 10px;
+            text-align: left;
+            
+        }
+        th {
+            background-color: whitesmoke;
+            color: #333;
+    
+        }
+        .pagination {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .pagination button {
+            background-color: #4d5572;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            margin: 0 2px;
+            cursor: pointer;
+        }
+        .pagination button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .search-container {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .search-container input {
+            padding: 5px;
+            border: 1px solid #929292;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-container">
+        <div class="logo">
+            <input type="file" id="fileUpload" accept="img/*" style="display: none;">
+            <img src="img/default.png" alt="Logo">
+            <p style="text-align: center;"> Liezel Tumbaga</p>
+            <p><strong>Session:</strong> 30</p>
+
+        </div>
+        <a href="index.html"><i class="fas fa-user"></i><span>Home</span></a>
+        <a href="edit.html"><i class="fas fa-edit"></i><span>Profile</span></a>
+        <a href="reservation.html"><i class="fas fa-calendar-check"></i><span> Reservation</span></a>
+        <a href="history.html"><i class="fas fa-history"></i><span> History</span></a>
+        <a href="logout.html"><i class="fas fa-sign-out-alt"></i><span> Logout</span></a>
+    </div>
+    <div class="container">
+        <div class="form-container">
+            <h2>History</h2>
+            <label for="entries">Show 
+                <select id="entries">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select> 
+                entries per page
+            </label>
+            <div class="search-container">
+                <label for="search">Search:</label>
+                <input type="text" id="search">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Number</th>
+                        <th>Name</th>
+                        <th>Sit Purpose</th>
+                        <th>Laboratory</th>
+                        <th>Login</th>
+                        <th>Logout</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="8" style="text-align: center;">No data available</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="pagination">
+                <button disabled>&laquo;</button>
+                <button class="active">1</button>
+                <button disabled>&raquo;</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('fileUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>

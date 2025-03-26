@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #92929288;
+        }        
+        .nav-container {
+            width: 237px;
+            background-color: whitesmoke;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            border-right: #4d5572  2px solid;
+        }
+
+        .nav-container a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            margin: 30px 0;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-container a i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .nav-container a:hover {
+            background-color: #929292;
+            color: white;
+        }
+
+        .nav-container a span {
+            font-weight: normal;
+        }
+
+        .nav-container a.active {
+            font-weight: bold;
+            background-color: #e0e0e0;
+        }
+        .logo {
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .logo img {
+            width: 80px;
+        }
+        .container {
+            margin:auto; /* Adjust for fixed sidebar */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+        }
+        .edit-profile-card {
+            background-color: whitesmoke;
+            width: 600px;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 3px solid #929292; /* Purple Border */
+        }
+        .title {
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: #4d5572;
+            border-radius: 5px 5px 0 0;
+            padding: 5px;
+            color: white;
+        }
+        .profile-img img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #929292; /* Placeholder */
+        }
+        form {
+            text-align: left;
+            padding: 10px;
+        }
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 25px; /* Increase spacing between the form fields */
+        }
+
+        .form-group .form-field {
+            width: 47%;
+            margin-bottom: 10px;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin: 8px 0 3px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #929292;
+            border-radius: 5px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        .save-btn {
+            background-color: #4d5572; /* Blue */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            flex: 1;
+            margin-right: 5px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .cancel-btn {
+            background-color: #4d5572a4; /* Red */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            flex: 1;
+            margin-left: 5px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .save-btn:hover {
+            background-color: #1565C0;
+        }
+        .cancel-btn:hover {
+            background-color: #B71C1C;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-container">
+        <div class="logo">
+            <input type="file" id="fileUpload" accept="img/*" style="display: none;">
+            <img src="img/default.png" alt="Logo">
+            <p style="text-align: center;"> Liezel Tumbaga</p>
+            <p><strong>Session:</strong> 30</p>
+
+        </div>
+        <a href="index.html"><i class="fas fa-user"></i><span>Home</span></a>
+        <a href="edit.html"><i class="fas fa-edit"></i><span>Profile</span></a>
+        <a href="reservation.html"><i class="fas fa-calendar-check"></i><span> Reservation</span></a>
+        <a href="history.html"><i class="fas fa-history"></i><span> History</span></a>
+        <a href="logout.html"><i class="fas fa-sign-out-alt"></i><span> Logout</span></a>
+    </div>
+    <div class="container">
+        <div class="edit-profile-card">
+            <h2 class="title">Edit Profile</h2>
+            <div class="profile-img">
+                <img src="img/default.png" alt="Profile Picture">
+            </div>
+            <form action="#" method="post">
+                <div class="form-group">
+                    <div class="form-field">
+                        <label>ID No.</label>
+                        <input type="text" value="20948659" readonly>
+                    </div>
+                    <div class="form-field">
+                        <label>Lastname</label>
+                        <input type="text" value="Tumbaga">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-field">
+                        <label>Firstname</label>
+                        <input type="text" value="Liezel">
+                    </div>
+                    <div class="form-field">
+                        <label>Middlename</label>
+                        <input type="text" value="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-field">
+                        <label>Course</label>
+                        <select>
+                            <option selected>BSIT</option>
+                            <option>BSCS</option>
+                            <option>BSECE</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Year Level</label>
+                        <select>
+                            <option>1st Year</option>
+                            <option>2nd Year</option>
+                            <option selected>3rd Year</option>
+                            <option>4th Year</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-field">
+                        <label>Email</label>
+                        <input type="email" value="tumbagaliezel28@gmail.com">
+                    </div>
+                    <div class="form-field">
+                        <label>Address</label>
+                        <input type="text" value="Tophill Lahug Cebu City">
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button  type="button" class="save-btn" onclick="window.location.href='edit.html'">Save Changes</button>
+                    <button type="button" class="cancel-btn" onclick="window.location.href='edit.html'">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.getElementById('fileUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>

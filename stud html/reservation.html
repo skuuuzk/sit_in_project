@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #92929288;
+            display: flex;
+        }
+        .nav-container {
+            width: 237px;
+            background-color: whitesmoke;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            border-right: #4d5572  2px solid;
+        }
+
+        .nav-container a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            margin: 30px 0;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-container a i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .nav-container a:hover {
+            background-color: #929292;
+            color: white;
+        }
+
+        .nav-container a span {
+            font-weight: normal;
+        }
+
+        .nav-container a.active {
+            font-weight: bold;
+            background-color: #e0e0e0;
+        }
+        .logo {
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .logo img {
+            width: 80px;
+        }
+        .container {
+            margin:auto; /* Adjust for fixed sidebar */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+        }
+
+        .form-container {
+            background: whitesmoke;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            margin-top: 20px 0;
+            border: 3px solid #929292;
+        }
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: #4d5572;
+            border-radius: 5px 5px 0 0;
+            padding: 5px;
+            color: white;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4d5572;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #929292;
+        }
+    </style>
+    
+</head>
+<body>    
+    <div class="nav-container">
+        <div class="logo">
+            <input type="file" id="fileUpload" accept="img/*" style="display: none;">
+            <img src="img/default.png" alt="Logo">
+            <p style="text-align: center;"> Liezel Tumbaga</p>
+            <p><strong>Session:</strong> 30</p>
+
+        </div>
+        <a href="index.html"><i class="fas fa-user"></i><span>Home</span></a>
+        <a href="edit.html"><i class="fas fa-edit"></i><span>Profile</span></a>
+        <a href="reservation.html"><i class="fas fa-calendar-check"></i><span> Reservation</span></a>
+        <a href="history.html"><i class="fas fa-history"></i><span> History</span></a>
+        <a href="logout.html"><i class="fas fa-sign-out-alt"></i><span> Logout</span></a>
+    </div>
+    <div class="container">
+        <div class="form-container">
+            <h2>Reservation</h2>
+            <label>ID Number:</label>
+            <input type="text" value="20948659" readonly>
+
+            <label>Student Name:</label>
+            <input type="text" value="Liezel Tumbaga" readonly>
+
+            <label>Purpose:</label>
+            <select>
+                <option>C Programming</option>
+                <option>Python<option>
+                <option selected>ASP .net</option>
+                <option>Java</option>
+            </select>
+
+            <label>Lab:</label>
+            <input type="text" value="524">
+
+            <label>Time In:</label>
+            <input type="time">
+
+            <label>Date:</label>
+            <input type="date">
+
+            <label>Remaining Session:</label>
+            <input type="text" value="30" readonly>
+
+            <button>Reserve</button>
+        </div>
+    </div>
+    <script>
+        document.getElementById('fileUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>
