@@ -1,6 +1,12 @@
 <?php
 include 'config/db.php'; // Assuming you have a file for database connection
 
+// Ensure user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
 // Fetch announcements from the database
 $query = "SELECT title AS TITLE, created_at AS CREATED_AT, content AS CONTENT FROM announcement ORDER BY created_at DESC";
 $result = mysqli_query($conn, $query);
@@ -11,15 +17,15 @@ $user_id = $_SESSION['user_id'];
 $query = "SELECT session AS session_count, firstname, lastname, profile_pic FROM users WHERE user_id = '$user_id'";
 $result = mysqli_query($conn, $query);
 $session_data = mysqli_fetch_assoc($result);
-$session_count = $session_data['session_count'];
-$full_name = $session_data['firstname'] . ' ' . $session_data['lastname'];
+$session_count = $session_data['session_count'] ?? 'N/A';
+$full_name = ($session_data['firstname'] ?? '') . ' ' . ($session_data['lastname'] ?? '');
 $profile_pic = !empty($session_data['profile_pic']) ? $session_data['profile_pic'] : 'img/default.png';
 
 // Fetch unread notifications count
 $query = "SELECT COUNT(*) AS unread_count FROM notifications WHERE user_id = '$user_id' AND is_read = 0";
 $result = mysqli_query($conn, $query);
 $notification_data = mysqli_fetch_assoc($result);
-$unread_count = $notification_data['unread_count'];
+$unread_count = $notification_data['unread_count'] ?? 0;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -134,9 +140,8 @@ $unread_count = $notification_data['unread_count'];
             <p style="text-align: center;">
                 <?php echo htmlspecialchars($full_name); ?>
             </p>
-            <p><strong>Session:</strong> <?php echo isset($session_count) ? $session_count : 'N/A'; ?></p>
+            <p><strong>Session:</strong> <?php echo htmlspecialchars($session_count); ?></p>
         </div> 
-
         
         <a href="dashboard.php" class="active"><i class="fas fa-user"></i><span>Home</span></a>
         <a href="edit.php"><i class="fas fa-edit"></i><span>Profile</span></a>

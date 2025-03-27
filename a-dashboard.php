@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_reservation
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -192,7 +192,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_reservation
         .announcement button {
             width: 100%;
             padding: 10px;
-            background: #007bff;
+            background:rgb(187, 0, 255);
             color: white;
             border: none;
             border-radius: 5px;
@@ -200,7 +200,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_reservation
         }
 
         .announcement button:hover {
-            background: #0056b3;
+            background:rgb(85, 104, 123);
         }
 
         .announcement-list {
@@ -224,32 +224,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_reservation
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
             background-color: rgba(0,0,0,0.4);
-            padding-top: 60px;
         }
+
         .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
+            background-color: white;
+            margin: 10% auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-            border-radius: 10px;
+            width: 30%;
+            border-radius: 8px;
         }
+
         .close {
-            color: #aaa;
             float: right;
             font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
             cursor: pointer;
         }
+
         button { cursor: pointer; }
     </style>
 </head>
@@ -257,7 +249,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_reservation
     <nav class="navbar">
         <h2>Admin Dashboard</h2>        
         <ul>
-            <li><a href="a-dashboard.php"><i class="fas fa-user"></i>Home</a></li>
+            <li><a href="a-dashboard.php">Home</a></li>
+            <li><a href="#" id="openSearch">Search</a></li>
             <li><a href="a-students.php">Students</a></li>
             <li><a href="a-currents.php">Current Sit-in</a></li>
             <li><a href="a-vrecords.php">Visit Records</a></li>
@@ -265,6 +258,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_reservation
         </ul>
     </nav>
 
+    <!-- Search Modal -->
     <div id="searchModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('searchModal')">&times;</span>
@@ -274,6 +268,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_reservation
         </div>
     </div>
 
+    <!-- Sit-in Form Modal -->
     <div id="sitInModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('sitInModal')">&times;</span>
@@ -383,7 +378,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_reservation
         function closeModal(id) {
             document.getElementById(id).style.display = 'none';
         }
-        document.getElementById('searchBtn').addEventListener('click', function() {
+        document.getElementById('openSearch').addEventListener('click', function() {
             openModal('searchModal');
         });
         function openSitInForm() {
@@ -429,25 +424,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_reservation
                     }
                 }
             });
-
-            // Modal functionality
-            var modal = document.getElementById("searchModal");
-            var btn = document.getElementById("searchBtn");
-            var span = document.getElementsByClassName("close")[0];
-
-            btn.onclick = function() {
-                modal.style.display = "block";
-            }
-
-            span.onclick = function() {
-                modal.style.display = "none";
-            }
-
-            window.onclick = function(event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
-            }
         });
     </script>    
 </body>

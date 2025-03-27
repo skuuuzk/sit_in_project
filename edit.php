@@ -2,6 +2,12 @@
 
 include 'config/db.php'; // Assuming you have a file for database connection
 
+// Ensure user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
 // Fetch user information from the database
 $user_id = $_SESSION['user_id'];
 $query = "SELECT user_id AS USER_ID, firstname AS FIRSTNAME, lastname AS LASTNAME, year AS YEAR, course AS COURSE, email AS EMAIL, address AS ADDRESS, profile_pic FROM users WHERE user_id = '$user_id'";
@@ -111,7 +117,7 @@ body { display: flex; margin: 0; padding: 0; font-family: Arial, sans-serif; bac
                     <p><strong>Email:</strong> <?php echo htmlspecialchars($user['EMAIL']); ?></p>
                     <p><strong>Address:</strong> <?php echo htmlspecialchars($user['ADDRESS']); ?></p>
                 </div>
-                    <button onclick="window.location.href='edit-profile.php'">Edit Profile</button>
+                    <button class="edit-btn" onclick="window.location.href='edit-profile.php'">Edit Profile</button>
             </div>
         </div>
     </div>

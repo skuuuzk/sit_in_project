@@ -10,17 +10,14 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 // Fetch user data
-$stmt = $conn->prepare("SELECT IDNO, LASTNAME, FIRSTNAME, MIDNAME, EMAIL, COURSE, YEAR, ADDRESS, PROFILE_PIC, SESSION FROM USERS WHERE USER_ID = ?");
+$stmt = $conn->prepare("SELECT user_id, firstname, lastname, midname, email, course, year, address, profile_pic, session FROM users WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $stmt->close();
 
-// Fix profile picture path handling
-$default_pic = "img/profile.png";  // Default relative to user directory
-$profile_pic = !empty($user['PROFILE_PIC']) ? $user['PROFILE_PIC'] : $default_pic;
-
+$profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'img/default.png';
 $error_messages = array(); // Array to store different error messages
 
 // Handle form submission
@@ -32,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $course = $_POST['course'];
     $year_level = $_POST['year'];
     $address = $_POST['address'];
-    $profile_pic_path = $user['PROFILE_PIC']; // Default to current profile picture
+    $profile_pic_path = $user['profile_pic']; // Default to current profile picture
 
     // Profile Picture Upload - Update to use uploads directory in user folder
     if (!empty($_FILES['profile_pic']['name'])) {
@@ -70,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         try {
             // Update user details
-            $update_stmt = $conn->prepare("UPDATE USERS SET FIRSTNAME = ?, LASTNAME = ?, MIDNAME = ?, EMAIL = ?, COURSE = ?, YEAR = ?, ADDRESS = ?, PROFILE_PIC = ? WHERE USER_ID = ?");
+            $update_stmt = $conn->prepare("UPDATE users SET firstname = ?, lastname = ?, midname = ?, email = ?, course = ?, year = ?, address = ?, profile_pic = ? WHERE user_id = ?");
             $update_stmt->bind_param("ssssssssi", $firstname, $lastname, $middlename, $email, $course, $year_level, $address, $profile_pic_path, $user_id);
             $update_stmt->execute();
             $update_stmt->close();
@@ -81,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Update session variables with new info
             $_SESSION['user'] = $firstname . ' ' . $lastname;
             $_SESSION['profile_pic'] = $profile_pic_path;
-            $_SESSION['session_count'] = $user['SESSION'];
+            $_SESSION['session_count'] = $user['session'];
             
             // Redirect to edit.php after successful update
             header("Location: edit.php");
@@ -131,9 +128,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div class="nav-container">
         <div class="logo">
-            <img src="<?php echo htmlspecialchars($_SESSION['profile_pic'] ?? 'img/default.png'); ?>" alt="Profile Picture">
-            <p style="text-align: center;"> <?= $_SESSION['user'] ?? 'Guest' ?></p>
-            <p><strong>Session:</strong> <?= $_SESSION['session_count'] ?? '0' ?></p>
+            <img src="<?php echo htmlspecialchars($_SESSION['profile_pic'] ?? $profile_pic); ?>" alt="Profile Picture">
+            <p style="text-align: center;"> <?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']); ?></p>
+            <p><strong>Session:</strong> <?= htmlspecialchars($_SESSION['session_count'] ?? $user['session']); ?></p>
         </div>
         <a href="dashboard.php"><i class="fas fa-user"></i><span>Home</span></a>
         <a href="edit.php" class="active"><i class="fas fa-edit"></i><span>Profile</span></a>
@@ -147,37 +144,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h2 class="title">Edit Profile</h2>
             <form action="edit-profile.php" method="post" enctype="multipart/form-data">
                 <label>ID Number:</label>
-                <input type="text" name="idno" value="<?php echo htmlspecialchars($user['IDNO']); ?>" readonly>
+                <input type="text" name="idno" value="<?php echo htmlspecialchars($user['user_id']); ?>" readonly>
 
                 <label>First Name:</label>
-                <input type="text" name="firstname" value="<?php echo htmlspecialchars($user['FIRSTNAME']); ?>" required>
+                <input type="text" name="firstname" value="<?php echo htmlspecialchars($user['firstname']); ?>" required>
 
                 <label>Last Name:</label>
-                <input type="text" name="lastname" value="<?php echo htmlspecialchars($user['LASTNAME']); ?>" required>
+                <input type="text" name="lastname" value="<?php echo htmlspecialchars($user['lastname']); ?>" required>
 
                 <label>Middle Name:</label>
-                <input type="text" name="midname" value="<?php echo htmlspecialchars($user['MIDNAME']); ?>">
+                <input type="text" name="midname" value="<?php echo htmlspecialchars($user['midname']); ?>">
 
                 <label>Email:</label>
-                <input type="email" name="email" value="<?php echo htmlspecialchars($user['EMAIL']); ?>" required>
+                <input type="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
 
                 <label>Course:</label>
                 <select name="course">
-                    <option <?php if ($user['COURSE'] == 'BSIT') echo 'selected'; ?>>BSIT</option>
-                    <option <?php if ($user['COURSE'] == 'BSCS') echo 'selected'; ?>>BSCS</option>
-                    <option <?php if ($user['COURSE'] == 'BSECE') echo 'selected'; ?>>BSECE</option>
+                    <option <?php if ($user['course'] == 'BSIT') echo 'selected'; ?>>BSIT</option>
+                    <option <?php if ($user['course'] == 'BSCS') echo 'selected'; ?>>BSCS</option>
+                    <option <?php if ($user['course'] == 'BSECE') echo 'selected'; ?>>BSECE</option>
                 </select>
 
                 <label>Year Level:</label>
                 <select name="year">
-                    <option <?php if ($user['YEAR'] == '1st Year') echo 'selected'; ?>>1st Year</option>
-                    <option <?php if ($user['YEAR'] == '2nd Year') echo 'selected'; ?>>2nd Year</option>
-                    <option <?php if ($user['YEAR'] == '3rd Year') echo 'selected'; ?>>3rd Year</option>
-                    <option <?php if ($user['YEAR'] == '4th Year') echo 'selected'; ?>>4th Year</option>
+                    <option <?php if ($user['year'] == '1st Year') echo 'selected'; ?>>1st Year</option>
+                    <option <?php if ($user['year'] == '2nd Year') echo 'selected'; ?>>2nd Year</option>
+                    <option <?php if ($user['year'] == '3rd Year') echo 'selected'; ?>>3rd Year</option>
+                    <option <?php if ($user['year'] == '4th Year') echo 'selected'; ?>>4th Year</option>
                 </select>
 
                 <label>Address:</label>
-                <input type="text" name="address" value="<?php echo htmlspecialchars($user['ADDRESS']); ?>" required>
+                <input type="text" name="address" value="<?php echo htmlspecialchars($user['address']); ?>" required>
 
                 <label>Profile Picture:</label>
                 <input type="file" name="profile_pic">

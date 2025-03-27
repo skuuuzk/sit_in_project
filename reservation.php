@@ -1,5 +1,38 @@
+<?php
+include 'config/db.php'; // Assuming you have a file for database connection
 
+// Fetch user information from the database
+$user_id = $_SESSION['user_id'];
+$query = "SELECT user_id AS USER_ID, firstname AS FIRSTNAME, lastname AS LASTNAME, session AS remaining_sessions, profile_pic FROM users WHERE user_id = '$user_id'";
+$result = mysqli_query($conn, $query);
+$user = mysqli_fetch_assoc($result);
 
+$student_name = $user['FIRSTNAME'] . " " . $user['LASTNAME'];
+$remaining_sessions = $user['remaining_sessions'];
+$profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'img/default.png';
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $purpose = $_POST['purpose'];
+    $lab = $_POST['lab'];
+    $time_in = $_POST['time_in'];
+    $date = $_POST['date'];
+
+    // Insert reservation into the database with pending status
+    $stmt = $conn->prepare("INSERT INTO reservations (user_id, purpose, lab, time_in, date, status) VALUES (?, ?, ?, ?, ?, 'pending')");
+    $stmt->bind_param("issss", $user_id, $purpose, $lab, $time_in, $date);
+    if ($stmt->execute()) {
+        echo "<script>
+            alert('Reservation request submitted! Please wait for admin approval.');
+            setTimeout(function() {
+                window.location.href = 'reservation.php';
+            }, 2000); // 2-second delay before redirect
+        </script>";
+    } else {
+        echo "<script>alert('Error: " . $stmt->error . "');</script>";
+    }
+    $stmt->close();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,7 +146,7 @@
 <body>
     <div class="nav-container">
         <div class="logo">
-            <img src="img/default.png" alt="Logo">
+            <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Logo">
             <p style="text-align: center;"> <?php echo htmlspecialchars($student_name); ?> </p>
             <p><strong>Session:</strong> <?php echo htmlspecialchars($remaining_sessions); ?></p>
         </div>
@@ -121,6 +154,7 @@
         <a href="edit.php"><i class="fas fa-edit"></i><span>Profile</span></a>
         <a href="reservation.php" class="active"><i class="fas fa-calendar-check"></i><span> Reservation</span></a>
         <a href="history.php"><i class="fas fa-history"></i><span> History</span></a>
+        <a href="notification.php"><i class="fas fa-bell"></i><span>Notifications</span></a>
         <a href="logout.php"><i class="fas fa-sign-out-alt"></i><span> Logout</span></a>
     </div>
     <div class="container">

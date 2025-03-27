@@ -156,7 +156,8 @@ $total_pages = ceil($total_records / $records_per_page);
     <nav class="navbar">
         <h2>Admin Dashboard</h2>
         <ul>
-            <li><a href="a-dashboard.php"><i class="fas fa-user"></i>Home</a></li>
+            <li><a href="a-dashboard.php">Home</a></li>
+            <li><a href="#" id="openSearch">Search</a></li>
             <li><a href="a-students.php">Students</a></li>
             <li><a href="a-currents.php">Current Sit-in</a></li>
             <li><a href="a-vrecords.php">Visit Records</a></li>
