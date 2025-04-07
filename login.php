@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
         if (password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['user_id'];
+            $_SESSION['idno'] = $user['idno'];
             $_SESSION['user'] = $username;  // Store username in session
 
             header("Location: dashboard.php");

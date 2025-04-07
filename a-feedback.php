@@ -7,21 +7,21 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 
-// Fetch visit records
-$query = "SELECT r.idno, CONCAT(u.firstname, ' ', u.lastname) AS student_name, r.purpose, r.lab, r.time_in, r.time_out, r.date 
+// Fetch feedback records
+$query = "SELECT r.idno, CONCAT(u.firstname, ' ', u.lastname) AS student_name, r.time_in, r.feedback, r.feedback_timestamp 
           FROM reservations r 
           JOIN users u ON r.idno = u.idno 
-          WHERE r.status = 'completed' 
-          ORDER BY r.date DESC";
+          WHERE r.feedback IS NOT NULL 
+          ORDER BY r.feedback_timestamp DESC";
 $result = mysqli_query($conn, $query);
-$visit_records = mysqli_fetch_all($result, MYSQLI_ASSOC);
+$feedback_records = mysqli_fetch_all($result, MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visit Records</title>
+    <title>Student Feedback</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         * {
@@ -86,44 +86,40 @@ $visit_records = mysqli_fetch_all($result, MYSQLI_ASSOC);
             <li><a href="a-students.php">Students</a></li>
             <li><a href="a-currents.php">Current Sit-in</a></li>
             <li><a href="a-vrecords.php">Visit Records</a></li>
+            <li><a href="a-feedback.php">Feedback</a></li>
             <li><a href="a-logout.php">Logout</a></li>
-            <li><a href="#" onclick="openModal('searchModal')">Search</a></li>
         </ul>
     </nav>
     <div class="container">
-        <h2 style="text-align: center;">Visit Records</h2>
+        <h2 style="text-align: center;">Student Feedback</h2>
         <table>
             <thead>
                 <tr>
                     <th>ID Number</th>
                     <th>Name</th>
-                    <th>Purpose</th>
-                    <th>Lab Room</th>
-                    <th>Time-in</th>
-                    <th>Time-out</th>
+                    <th>Sit-in Date/Time</th>
+                    <th>Feedback</th>
+                    <th>Feedback Submitted At</th>
                 </tr>
             </thead>
             <tbody>
-                <?php if (!empty($visit_records)): ?>
-                    <?php foreach ($visit_records as $record): ?>
+                <?php if (!empty($feedback_records)): ?>
+                    <?php foreach ($feedback_records as $record): ?>
                         <tr>
                             <td><?php echo htmlspecialchars($record['idno']); ?></td>
                             <td><?php echo htmlspecialchars($record['student_name']); ?></td>
-                            <td><?php echo htmlspecialchars($record['purpose']); ?></td>
-                            <td><?php echo htmlspecialchars($record['lab']); ?></td>
                             <td><?php echo htmlspecialchars($record['time_in']); ?></td>
-                            <td><?php echo htmlspecialchars($record['time_out']); ?></td>
+                            <td><?php echo htmlspecialchars($record['feedback']); ?></td>
+                            <td><?php echo htmlspecialchars($record['feedback_timestamp']); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="7" style="text-align: center;">No visit records found.</td>
+                        <td colspan="5" style="text-align: center;">No feedback records found.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
         </table>
     </div>
-
-    <?php include 'common-modals.php'; ?>
 </body>
 </html>

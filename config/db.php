@@ -24,7 +24,7 @@ try {
             throw new Exception("Error creating database: " . $conn->error);
         }
     }
-    
+
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
@@ -40,8 +40,7 @@ try {
 
     // Users Table
     $usersTableSQL = "CREATE TABLE IF NOT EXISTS users (
-        user_id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        idno INT(11) UNIQUE NOT NULL,
+        idno INT(11) AUTO_INCREMENT PRIMARY KEY ,
         lastname VARCHAR(20) NOT NULL,
         firstname VARCHAR(20) NOT NULL,
         midname VARCHAR(20),

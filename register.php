@@ -3,7 +3,7 @@
 require_once 'config/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id_number = $_POST['id_number'];
+    $idno = $_POST['idno'];
     $last_name = $_POST['last_name'];
     $first_name = $_POST['first_name'];
     $middle_name = $_POST['middle_name'];
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     $stmt = $conn->prepare("INSERT INTO users (idno, lastname, firstname, midname, course, year, username, password, email, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("isssssssss", $id_number, $last_name, $first_name, $middle_name, $course, $course_level, $username, $hashed_password, $email, $address);
+    $stmt->bind_param("isssssssss", $idno, $last_name, $first_name, $middle_name, $course, $course_level, $username, $hashed_password, $email, $address);
 
     if ($stmt->execute()) {
         header("Location: login.php");
@@ -138,8 +138,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form method="POST" action="">
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="id_number" class="form-label">ID Number:</label>
-                    <input type="text" class="form-control" id="id_number" name="id_number" required>
+                    <label for="idno" class="form-label">ID Number:</label>
+                    <input type="text" class="form-control" id="idno" name="idno" required>
                 </div>
                 <div class="col-md-6">
                     <label for="last_name" class="form-label">Last Name:</label>
@@ -171,10 +171,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <label for="course" class="form-label">Course:</label>
                     <select class="form-select" id="course" name="course" required>
                         <option value="" disabled selected>Select Course</option>
-                        <option value="BSIT">BS Information Technology</option>
-                        <option value="BSCS">BS Computer Science</option>
-                        <option value="BSECE">BS Electronics & Communications Engineering</option>
-                        <option value="BSBA">BS Business Administration</option>
+                        <option value="BSIT">Bachelor of Science in Information Technology</option>
+                        <option value="BSCS">Bachelor of Science in Computer Science</option>
+                        <option value="BSECE">Bachelor of Science in Electronics Engineering</option>
+                        <option value="BSCE">Bachelor of Science in Civil Engineering</option>
+                        <option value="BSME">Bachelor of Science in Mechanical Engineering</option>
+                        <option value="BSEE">Bachelor of Science in Electrical Engineering</option>
+                        <option value="BSBA">Bachelor of Science in Business Administration</option>
+                        <option value="BSA">Bachelor of Science in Accountancy</option>
+                        <option value="BSHM">Bachelor of Science in Hospitality Management</option>
+                        <option value="BSTM">Bachelor of Science in Tourism Management</option>
+                        <option value="BSN">Bachelor of Science in Nursing</option>
+                        <option value="BSED">Bachelor of Secondary Education</option>
+                        <option value="BEED">Bachelor of Elementary Education</option>
+                        <option value="BSPSY">Bachelor of Science in Psychology</option>
                     </select>
                 </div>
             </div>

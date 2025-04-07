@@ -2,16 +2,16 @@
 require_once('config/db.php'); // Updated path to the database file
 
 // Ensure user is logged in
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['idno'])) {
     header("Location: login.php");
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
+$idno = $_SESSION['idno'];
 
 // Fetch user data
-$stmt = $conn->prepare("SELECT user_id, firstname, lastname, midname, email, course, year, address, profile_pic, session FROM users WHERE user_id = ?");
-$stmt->bind_param("i", $user_id);
+$stmt = $conn->prepare("SELECT idno, firstname, lastname, midname, email, course, year, address, profile_pic, session FROM users WHERE idno = ?");
+$stmt->bind_param("i", $idno);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Generate a unique filename
         $file_extension = strtolower(pathinfo($_FILES["profile_pic"]["name"], PATHINFO_EXTENSION));
-        $new_filename = "profile_" . $user_id . "_" . time() . "." . $file_extension;
+        $new_filename = "profile_" . $idno . "_" . time() . "." . $file_extension;
         $upload_path = $upload_dir . $new_filename;
         
         // Store relative path in database
@@ -67,8 +67,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         try {
             // Update user details
-            $update_stmt = $conn->prepare("UPDATE users SET firstname = ?, lastname = ?, midname = ?, email = ?, course = ?, year = ?, address = ?, profile_pic = ? WHERE user_id = ?");
-            $update_stmt->bind_param("ssssssssi", $firstname, $lastname, $middlename, $email, $course, $year_level, $address, $profile_pic_path, $user_id);
+            $update_stmt = $conn->prepare("UPDATE users SET firstname = ?, lastname = ?, midname = ?, email = ?, course = ?, year = ?, address = ?, profile_pic = ? WHERE idno = ?");
+            $update_stmt->bind_param("ssssssssi", $firstname, $lastname, $middlename, $email, $course, $year_level, $address, $profile_pic_path, $idno);
             $update_stmt->execute();
             $update_stmt->close();
             
@@ -144,7 +144,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h2 class="title">Edit Profile</h2>
             <form action="edit-profile.php" method="post" enctype="multipart/form-data">
                 <label>ID Number:</label>
-                <input type="text" name="idno" value="<?php echo htmlspecialchars($user['user_id']); ?>" readonly>
+                <input type="text" name="idno" value="<?php echo htmlspecialchars($user['idno']); ?>" readonly>
 
                 <label>First Name:</label>
                 <input type="text" name="firstname" value="<?php echo htmlspecialchars($user['firstname']); ?>" required>
@@ -160,17 +160,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <label>Course:</label>
                 <select name="course">
-                    <option <?php if ($user['course'] == 'BSIT') echo 'selected'; ?>>BSIT</option>
-                    <option <?php if ($user['course'] == 'BSCS') echo 'selected'; ?>>BSCS</option>
-                    <option <?php if ($user['course'] == 'BSECE') echo 'selected'; ?>>BSECE</option>
+                        <option value="BSIT">Bachelor of Science in Information Technology</option>
+                        <option value="BSCS">Bachelor of Science in Computer Science</option>
+                        <option value="BSECE">Bachelor of Science in Electronics Engineering</option>
+                        <option value="BSCE">Bachelor of Science in Civil Engineering</option>
+                        <option value="BSME">Bachelor of Science in Mechanical Engineering</option>
+                        <option value="BSEE">Bachelor of Science in Electrical Engineering</option>
+                        <option value="BSBA">Bachelor of Science in Business Administration</option>
+                        <option value="BSA">Bachelor of Science in Accountancy</option>
+                        <option value="BSHM">Bachelor of Science in Hospitality Management</option>
+                        <option value="BSTM">Bachelor of Science in Tourism Management</option>
+                        <option value="BSN">Bachelor of Science in Nursing</option>
+                        <option value="BSED">Bachelor of Secondary Education</option>
+                        <option value="BEED">Bachelor of Elementary Education</option>
+                        <option value="BSPSY">Bachelor of Science in Psychology</option>
                 </select>
 
                 <label>Year Level:</label>
                 <select name="year">
-                    <option <?php if ($user['year'] == '1st Year') echo 'selected'; ?>>1st Year</option>
-                    <option <?php if ($user['year'] == '2nd Year') echo 'selected'; ?>>2nd Year</option>
-                    <option <?php if ($user['year'] == '3rd Year') echo 'selected'; ?>>3rd Year</option>
-                    <option <?php if ($user['year'] == '4th Year') echo 'selected'; ?>>4th Year</option>
+                    <option <?php if ($user['year'] == '1st Year') echo 'selected'; ?>>1st</option>
+                    <option <?php if ($user['year'] == '2nd Year') echo 'selected'; ?>>2nd</option>
+                    <option <?php if ($user['year'] == '3rd Year') echo 'selected'; ?>>3rd</option>
+                    <option <?php if ($user['year'] == '4th Year') echo 'selected'; ?>>4th</option>
                 </select>
 
                 <label>Address:</label>

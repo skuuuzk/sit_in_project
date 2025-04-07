@@ -2,19 +2,19 @@
 include 'config/db.php'; // Assuming you have a file for database connection
 
 // Ensure user is logged in
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['idno'])) {
     header("Location: login.php");
     exit();
 }
 
 // Fetch announcements from the database
-$query = "SELECT title AS TITLE, created_at AS CREATED_AT, content AS CONTENT FROM announcement ORDER BY created_at DESC";
+$query = "SELECT title, content, created_at FROM announcement ORDER BY created_at DESC";
 $result = mysqli_query($conn, $query);
 $announcements = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 // Fetch session count and user details
-$user_id = $_SESSION['user_id'];
-$query = "SELECT session AS session_count, firstname, lastname, profile_pic FROM users WHERE user_id = '$user_id'";
+$idno = $_SESSION['idno'];
+$query = "SELECT session AS session_count, firstname, lastname, profile_pic FROM users WHERE idno = '$idno'";
 $result = mysqli_query($conn, $query);
 $session_data = mysqli_fetch_assoc($result);
 $session_count = $session_data['session_count'] ?? 'N/A';
@@ -22,7 +22,7 @@ $full_name = ($session_data['firstname'] ?? '') . ' ' . ($session_data['lastname
 $profile_pic = !empty($session_data['profile_pic']) ? $session_data['profile_pic'] : 'img/default.png';
 
 // Fetch unread notifications count
-$query = "SELECT COUNT(*) AS unread_count FROM notifications WHERE user_id = '$user_id' AND is_read = 0";
+$query = "SELECT COUNT(*) AS unread_count FROM notifications WHERE idno = '$idno' AND is_read = 0";
 $result = mysqli_query($conn, $query);
 $notification_data = mysqli_fetch_assoc($result);
 $unread_count = $notification_data['unread_count'] ?? 0;
@@ -153,10 +153,12 @@ $unread_count = $notification_data['unread_count'] ?? 0;
 
     <div class="container">
         <div class="box announcement">
-            <h2>Announcement</h2>
+            <h2>Announcements</h2>
             <?php if (!empty($announcements)): ?>
                 <?php foreach ($announcements as $announcement): ?>
-                    <p><strong><?php echo htmlspecialchars($announcement['TITLE']); ?> | <?php echo htmlspecialchars($announcement['CREATED_AT']); ?></strong><br><?php echo htmlspecialchars($announcement['CONTENT']); ?></p>
+                    <p><strong><?php echo htmlspecialchars($announcement['title']); ?></strong><br>
+                    <?php echo htmlspecialchars($announcement['content']); ?><br>
+                    <small><?php echo htmlspecialchars($announcement['created_at']); ?></small></p>
                 <?php endforeach; ?>
             <?php else: ?>
                 <p>No announcements available.</p>

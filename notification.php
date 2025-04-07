@@ -2,15 +2,15 @@
 require_once('config/db.php'); // Assuming you have a file for database connection
 
 // Ensure user is logged in
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['idno'])) {
     header("Location: login.php");
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
+$idno = $_SESSION['idno'];
 
 // Fetch user information
-$query = "SELECT firstname, lastname, session AS session_count, profile_pic FROM users WHERE user_id = '$user_id'";
+$query = "SELECT firstname, lastname, session AS session_count, profile_pic FROM users WHERE idno = '$idno'";
 $result = mysqli_query($conn, $query);
 $user = mysqli_fetch_assoc($result);
 
@@ -19,18 +19,18 @@ $session_count = $user['session_count'];
 $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'img/default.png';
 
 // Fetch notifications
-$query = "SELECT message, created_at FROM notifications WHERE user_id = ? ORDER BY created_at DESC";
+$query = "SELECT message, created_at FROM notifications WHERE idno = ? ORDER BY created_at DESC";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("i", $user_id);
+$stmt->bind_param("i", $idno);
 $stmt->execute();
 $result = $stmt->get_result();
 $notifications = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
 // Mark notifications as read
-$query = "UPDATE notifications SET is_read = 1 WHERE user_id = ?";
+$query = "UPDATE notifications SET is_read = 1 WHERE idno = ?";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("i", $user_id);
+$stmt->bind_param("i", $idno);
 $stmt->execute();
 $stmt->close();
 ?>

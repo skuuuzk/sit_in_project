@@ -3,19 +3,19 @@
 include 'config/db.php'; // Assuming you have a file for database connection
 
 // Ensure user is logged in
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['idno'])) {
     header("Location: login.php");
     exit();
 }
 
 // Fetch user information from the database
-$user_id = $_SESSION['user_id'];
-$query = "SELECT user_id AS USER_ID, firstname AS FIRSTNAME, lastname AS LASTNAME, year AS YEAR, course AS COURSE, email AS EMAIL, address AS ADDRESS, profile_pic FROM users WHERE user_id = '$user_id'";
+$idno = $_SESSION['idno'];
+$query = "SELECT idno AS idno, firstname AS FIRSTNAME, lastname AS LASTNAME, year AS YEAR, course AS COURSE, email AS EMAIL, address AS ADDRESS, profile_pic FROM users WHERE idno = '$idno'";
 $result = mysqli_query($conn, $query);
 $user = mysqli_fetch_assoc($result);
 
 // Fetch session count
-$query = "SELECT session AS session_count FROM users WHERE user_id = '$user_id'";
+$query = "SELECT session AS session_count FROM users WHERE idno = '$idno'";
 $result = mysqli_query($conn, $query);
 $session_data = mysqli_fetch_assoc($result);
 $session_count = $session_data['session_count'];
@@ -110,7 +110,7 @@ body { display: flex; margin: 0; padding: 0; font-family: Arial, sans-serif; bac
                     <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture">
                 </div>
                 <div class="info">
-                    <p><strong>ID Number:</strong> <?php echo htmlspecialchars($user['USER_ID']); ?></p>
+                    <p><strong>ID Number:</strong> <?php echo htmlspecialchars($user['idno']); ?></p>
                     <p><strong>Name:</strong> <?php echo htmlspecialchars($full_name); ?></p>
                     <p><strong>Year Level:</strong> <?php echo htmlspecialchars($user['YEAR']); ?></p>
                     <p><strong>Course:</strong> <?php echo htmlspecialchars($user['COURSE']); ?></p>

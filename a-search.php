@@ -11,7 +11,7 @@ $search_results = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['search_query'])) {
     $search_query = $_POST['search_query'];
-    $stmt = $conn->prepare("SELECT user_id, firstname, lastname, email FROM users WHERE firstname LIKE ? OR lastname LIKE ? OR email LIKE ?");
+    $stmt = $conn->prepare("SELECT idno, firstname, lastname, email FROM users WHERE firstname LIKE ? OR lastname LIKE ? OR email LIKE ?");
     $like_query = '%' . $search_query . '%';
     $stmt->bind_param("sss", $like_query, $like_query, $like_query);
     $stmt->execute();
@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['search_query'])) {
                     <tbody>
                         <?php foreach ($search_results as $result): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($result['user_id']); ?></td>
+                                <td><?php echo htmlspecialchars($result['idno']); ?></td>
                                 <td><?php echo htmlspecialchars($result['firstname']); ?></td>
                                 <td><?php echo htmlspecialchars($result['lastname']); ?></td>
                                 <td><?php echo htmlspecialchars($result['email']); ?></td>

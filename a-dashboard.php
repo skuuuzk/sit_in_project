@@ -1,123 +1,48 @@
 <?php
-require_once('config/db.php'); // Assuming you have a file for database connection
+require_once('config/db.php');
 
 // Ensure admin is logged in
 if (!isset($_SESSION['admin_id'])) {
     header("Location: a-login.php");
     exit();
 }
-
 // Fetch statistics
 $students_count_query = "SELECT COUNT(*) AS count FROM users";
-$students_count_result = mysqli_query($conn, $students_count_query);
-$students_count = mysqli_fetch_assoc($students_count_result)['count'];
+$students_count = mysqli_fetch_assoc(mysqli_query($conn, $students_count_query))['count'];
 
 $current_sit_in_query = "SELECT COUNT(*) AS count FROM reservations WHERE time_out IS NULL";
-$current_sit_in_result = mysqli_query($conn, $current_sit_in_query);
-$current_sit_in = mysqli_fetch_assoc($current_sit_in_result)['count'];
+$current_sit_in = mysqli_fetch_assoc(mysqli_query($conn, $current_sit_in_query))['count'];
 
 $total_sit_in_query = "SELECT COUNT(*) AS count FROM reservations";
-$total_sit_in_result = mysqli_query($conn, $total_sit_in_query);
-$total_sit_in = mysqli_fetch_assoc($total_sit_in_result)['count'];
+$total_sit_in = mysqli_fetch_assoc(mysqli_query($conn, $total_sit_in_query))['count'];
+
+// Fetch activity statistics for graph
+$activity_data_query = "SELECT purpose, COUNT(*) AS count FROM reservations GROUP BY purpose";
+$activity_data_result = mysqli_query($conn, $activity_data_query);
+$purpose_stats = [];
+while ($row = mysqli_fetch_assoc($activity_data_result)) {
+    $purpose_stats[$row['purpose']] = $row['count'];
+}
 
 // Fetch announcements
 $announcements_query = "SELECT title, content, created_at FROM announcement ORDER BY created_at DESC";
 $announcements_result = mysqli_query($conn, $announcements_query);
 $announcements = mysqli_fetch_all($announcements_result, MYSQLI_ASSOC);
 
-// Fetch pending reservations
-$pending_reservations_query = "SELECT r.id, r.user_id, CONCAT(u.firstname, ' ', u.lastname) AS student_name, r.purpose, r.lab, r.time_in, r.date FROM reservations r JOIN users u ON r.user_id = u.user_id WHERE r.status = 'pending'";
-$pending_reservations_result = mysqli_query($conn, $pending_reservations_query);
-$pending_reservations = mysqli_fetch_all($pending_reservations_result, MYSQLI_ASSOC);
-
-// Fetch student activity data for the graph
-$activity_data_query = "SELECT purpose, COUNT(*) AS count FROM reservations GROUP BY purpose";
-$activity_data_result = mysqli_query($conn, $activity_data_query);
-$activity_data = [];
-while ($row = mysqli_fetch_assoc($activity_data_result)) {
-    $activity_data[$row['purpose']] = $row['count'];
-}
-
-$announcement_success = false;
-
 // Handle announcement submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['announcement'])) {
-    $announcement_content = $_POST['announcement'];
+    $announcement_content = trim($_POST['announcement']);
     $admin_id = $_SESSION['admin_id'];
 
-    $stmt = $conn->prepare("INSERT INTO announcement (content, admin_id) VALUES (?, ?)");
-    $stmt->bind_param("si", $announcement_content, $admin_id);
-    $stmt->execute();
-    $stmt->close();
+    if (!empty($announcement_content)) {
+        $stmt = $conn->prepare("INSERT INTO announcement (content, admin_id) VALUES (?, ?)");
+        $stmt->bind_param("si", $announcement_content, $admin_id);
+        $stmt->execute();
+        $stmt->close();
 
-    $announcement_success = true;
-
-    // Refresh the page to show the new announcement
-    header("Location: a-dashboard.php?success=1");
-    exit();
-}
-
-// Handle reservation approval
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['approve_reservation'])) {
-    $reservation_id = $_POST['reservation_id'];
-
-    // Update reservation status to approved
-    $stmt = $conn->prepare("UPDATE reservations SET status = 'approved' WHERE id = ?");
-    $stmt->bind_param("i", $reservation_id);
-    $stmt->execute();
-    $stmt->close();
-
-    // Notify user of approval
-    $stmt = $conn->prepare("SELECT user_id FROM reservations WHERE id = ?");
-    $stmt->bind_param("i", $reservation_id);
-    $stmt->execute();
-    $stmt->bind_result($user_id);
-    $stmt->fetch();
-    $stmt->close();
-
-    $notification = "Your reservation has been approved.";
-    $stmt = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
-    $stmt->bind_param("is", $user_id, $notification);
-    $stmt->execute();
-    $stmt->close();
-
-    // Decrease user's remaining sessions
-    $stmt = $conn->prepare("UPDATE users SET session = session - 1 WHERE user_id = ?");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $stmt->close();
-
-    // Refresh the page to show the updated reservations
-    header("Location: a-dashboard.php");
-    exit();
-}
-
-// Handle reservation disapproval
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_reservation'])) {
-    $reservation_id = $_POST['reservation_id'];
-
-    $stmt = $conn->prepare("UPDATE reservations SET status = 'disapproved' WHERE id = ?");
-    $stmt->bind_param("i", $reservation_id);
-    $stmt->execute();
-    $stmt->close();
-
-    // Notify user of disapproval
-    $stmt = $conn->prepare("SELECT user_id FROM reservations WHERE id = ?");
-    $stmt->bind_param("i", $reservation_id);
-    $stmt->execute();
-    $stmt->bind_result($user_id);
-    $stmt->fetch();
-    $stmt->close();
-
-    $notification = "Your reservation has been disapproved.";
-    $stmt = $conn->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
-    $stmt->bind_param("is", $user_id, $notification);
-    $stmt->execute();
-    $stmt->close();
-
-    // Refresh the page to show the updated reservations
-    header("Location: a-dashboard.php");
-    exit();
+        header("Location: a-dashboard.php?success=1");
+        exit();
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -171,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_reservation
 
         .top-section {
             display: flex;
-            gap: 20px;
+            gap: 10px;
         }
 
         .box {
@@ -243,6 +168,68 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_reservation
         }
 
         button { cursor: pointer; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+            border-radius: 8px;
+        }
+
+        .close {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .modal h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: #4d5572;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .modal label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .modal input, .modal select, .modal button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .modal button {
+            background-color: #4d5572;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .modal button:hover {
+            background-color: #3a4256;
+        }
     </style>
 </head>
 <body>
@@ -250,181 +237,79 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_reservation
         <h2>Admin Dashboard</h2>        
         <ul>
             <li><a href="a-dashboard.php">Home</a></li>
-            <li><a href="#" id="openSearch">Search</a></li>
             <li><a href="a-students.php">Students</a></li>
             <li><a href="a-currents.php">Current Sit-in</a></li>
             <li><a href="a-vrecords.php">Visit Records</a></li>
+            <li><a href="a-feedback.php">Feedback</a></li>
+            <li><a href="a-reports.php">Reports</a></li>
             <li><a href="a-logout.php">Logout</a></li>
+            <li><a href="#" onclick="openModal('searchModal')">Search</a></li>
         </ul>
     </nav>
 
-    <!-- Search Modal -->
-    <div id="searchModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('searchModal')">&times;</span>
-            <h2>Search Student</h2>
-            <input type="text" id="searchQuery" placeholder="Enter ID Number">
-            <button onclick="openSitInForm()">Search</button>
-        </div>
-    </div>
-
-    <!-- Sit-in Form Modal -->
-    <div id="sitInModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('sitInModal')">&times;</span>
-            <h2>Sit-in Form</h2>
-            <form action="a-currents.php" method="post">
-                <label>ID Number:</label>
-                <input type="text" id="idNumber" name="idNumber" readonly>
-                <label>Student Name:</label>
-                <input type="text" id="studentName" name="studentName" readonly>
-                <label>Purpose:</label>
-                <select name="purpose">
-                    <option>C Programming</option>
-                    <option>C++ Programming</option>
-                    <option>Java Programming</option>
-                    <option>Python Programming</option>
-                    <option>C# Programming</option>
-                    <option>Other</option>
-                </select>
-                <label>Lab:</label>
-                <select name="lab">
-                    <option>Lab 524</option>
-                    <option>Lab 525</option>
-                </select>
-                <label>Remaining Session:</label>
-                <input type="text" id="remainingSessions" name="remainingSessions" readonly>
-                <button type="submit">Sit-in (Approved)</button>
-                <button type="button" onclick="closeModal('sitInModal')">Close</button>
-            </form>
-        </div>
-    </div>
-
     <div class="container">
-        <div class="top-section">
-            <!-- Statistics Section -->
-            <div class="box stats">
-                <h3>Statistics</h3>
-                <p>Students Registered: <span id="studentsCount"><?php echo $students_count; ?></span></p>
-                <p>Currently Sit-in: <span id="currentSitIn"><?php echo $current_sit_in; ?></span></p>
-                <p>Total Sit-in: <span id="totalSitIn"><?php echo $total_sit_in; ?></span></p>
-                <canvas id="activityChart"></canvas>
-            </div>
-
-            <!-- Announcement Section -->
-            <div class="box announcement">
-                <h3>Create Announcement</h3>
-                <form action="a-dashboard.php" method="post">
-                    <textarea id="announcementInput" name="announcement" placeholder="Enter your announcement here..."></textarea>
-                    <button type="submit">Submit</button>
-                </form>
-                <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
-                    <p class="success-message">Announcement posted successfully.</p>
-                <?php endif; ?>
-                <h4>Posted Announcements</h4>
-                <div class="announcement-list" id="announcementList">
-                    <?php foreach ($announcements as $announcement): ?>
-                        <p><strong><?php echo htmlspecialchars($announcement['created_at']); ?></strong><br><?php echo htmlspecialchars($announcement['content']); ?></p>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pending Reservations Section -->
-        <div class="box pending-reservations">
-            <h3>Pending Reservations</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Student Name</th>
-                        <th>Purpose</th>
-                        <th>Lab</th>
-                        <th>Time In</th>
-                        <th>Date</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($pending_reservations as $reservation): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($reservation['id']); ?></td>
-                            <td><?php echo htmlspecialchars($reservation['student_name']); ?></td>
-                            <td><?php echo htmlspecialchars($reservation['purpose']); ?></td>
-                            <td><?php echo htmlspecialchars($reservation['lab']); ?></td>
-                            <td><?php echo htmlspecialchars($reservation['time_in']); ?></td>
-                            <td><?php echo htmlspecialchars($reservation['date']); ?></td>
-                            <td>
-                                <form action="a-dashboard.php" method="post" style="display:inline;">
-                                    <input type="hidden" name="reservation_id" value="<?php echo htmlspecialchars($reservation['id']); ?>">
-                                    <button type="submit" name="approve_reservation">Approve</button>
-                                </form>
-                                <form action="a-dashboard.php" method="post" style="display:inline;">
-                                    <input type="hidden" name="reservation_id" value="<?php echo htmlspecialchars($reservation['id']); ?>">
-                                    <button type="submit" name="disapprove_reservation">Disapprove</button>
-                                </form>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <script>
-        function openModal(id) {
-            document.getElementById(id).style.display = 'block';
-        }
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
-        document.getElementById('openSearch').addEventListener('click', function() {
-            openModal('searchModal');
-        });
-        function openSitInForm() {
-            let idNumber = document.getElementById('searchQuery').value;
-            if (idNumber) {
-                // Fetch student details from the server
-                fetch(`fetch_student.php?id=${idNumber}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data) {
-                            document.getElementById('idNumber').value = data.user_id;
-                            document.getElementById('studentName').value = data.firstname + ' ' + data.lastname;
-                            document.getElementById('remainingSessions').value = data.session;
-                            closeModal('searchModal');
-                            openModal('sitInModal');
-                        } else {
-                            alert('Student not found!');
-                        }
-                    });
-            } else {
-                alert('Please enter an ID number!');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Activity Chart
-            const ctx = document.getElementById('activityChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(<?php echo json_encode($activity_data); ?>),
-                    datasets: [{
-                        label: 'Student Activities',
-                        data: Object.values(<?php echo json_encode($activity_data); ?>),
-                        backgroundColor: '#4d5572'
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
+    <div class="top-section">
+        <!-- Statistics Section -->
+        <div class="box stats">
+            <h3>Statistics</h3>
+            <h2><?php echo $current_sit_in; ?></h2>
+            <p>Currently Sit-in Students</p>
+            <h2><?php echo $students_count; ?></h2>
+            <p>Registered Students</p>
+            <canvas id="purposeChart" width="300" height="200"></canvas>
+            <script>
+                const ctx = document.getElementById('purposeChart').getContext('2d');
+                const purposeChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: <?php echo json_encode(array_keys($purpose_stats)); ?>,
+                        datasets: [{
+                            label: 'No. of Students',
+                            data: <?php echo json_encode(array_values($purpose_stats)); ?>,
+                            backgroundColor: [
+                                '#4d5572', '#6c757d', '#007bff', '#28a745', '#ffc107', '#dc3545'
+                            ],
+                            borderColor: '#fff',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
                         }
                     }
-                }
-            });
-        });
-    </script>    
+                });
+            </script>
+        </div>
+
+        <!-- Announcement Section (moved beside stats) -->
+        <div class="box announcement">
+            <h3>Create Announcement</h3>
+            <form action="a-dashboard.php" method="post">
+                <textarea name="announcement" placeholder="Enter your announcement..." required></textarea>
+                <button type="submit">Post</button>
+            </form>
+            <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
+                <p class="success-message">Announcement posted successfully.</p>
+            <?php endif; ?>
+
+            <h4>Posted Announcements</h4>
+            <div class="announcement-list">
+                <?php foreach ($announcements as $announcement): ?>
+                    <p>
+                        <strong><?php echo htmlspecialchars($announcement['created_at']); ?></strong><br>
+                        <?php echo htmlspecialchars($announcement['content']); ?>
+                    </p>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div> <!-- END of top-section -->
+</div> <!-- END of container -->
+
+    <?php include 'common-modals.php'; ?>
 </body>
 </html>

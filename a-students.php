@@ -8,7 +8,7 @@ if (!isset($_SESSION['admin_id'])) {
 }
 
 // Fetch student information
-$query = "SELECT user_id, firstname, lastname, year, course, session FROM users";
+$query = "SELECT idno, firstname, lastname, year, course, session FROM users";
 $result = mysqli_query($conn, $query);
 $students = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
@@ -25,27 +25,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reset_sessions'])) {
 
 // Handle add student action
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_student'])) {
+    $idno = $_POST['idno'];
     $firstname = $_POST['firstname'];
+    $middlename = $_POST['middlename'];
     $lastname = $_POST['lastname'];
     $year = $_POST['year'];
     $course = $_POST['course'];
     $session = 30; // Default session count
 
-    $stmt = $conn->prepare("INSERT INTO users (firstname, lastname, year, course, session) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssi", $firstname, $lastname, $year, $course, $session);
+    // Correct SQL and correct order of values
+    $stmt = $conn->prepare("INSERT INTO users (idno, firstname, lastname, year, course, session) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssi", $idno, $firstname, $lastname, $year, $course, $session);
     $stmt->execute();
     $stmt->close();
 
-    // Refresh the page to show the updated student list
     header("Location: a-students.php");
     exit();
 }
 
+
 // Handle delete student action
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_student'])) {
-    $user_id = $_POST['user_id'];
-    $stmt = $conn->prepare("DELETE FROM users WHERE user_id = ?");
-    $stmt->bind_param("i", $user_id);
+    $idno = $_POST['idno'];
+    $stmt = $conn->prepare("DELETE FROM users WHERE idno = ?");
+    $stmt->bind_param("i", $idno);
     $stmt->execute();
     $stmt->close();
 
@@ -197,7 +200,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_student'])) {
         <h2>Admin Dashboard</h2>
         <ul>
             <li><a href="a-dashboard.php">Home</a></li>
-            <li><a href="#" id="openSearch">Search</a></li>
             <li><a href="a-students.php">Students</a></li>
             <li><a href="a-currents.php">Current Sit-in</a></li>
             <li><a href="a-vrecords.php">Visit Records</a></li>
@@ -226,15 +228,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_student'])) {
             <tbody>
                 <?php foreach ($students as $student): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($student['user_id']); ?></td>
-                        <td><?php echo htmlspecialchars($student['firstname'] . ' ' . $student['lastname']); ?></td>
+                        <td><?php echo htmlspecialchars($student['idno']); ?></td>
+                        <td><?php echo htmlspecialchars($student['firstname'] . ' '  . $student['lastname']); ?></td>
                         <td><?php echo htmlspecialchars($student['year']); ?></td>
                         <td><?php echo htmlspecialchars($student['course']); ?></td>
                         <td><?php echo htmlspecialchars($student['session']); ?></td>
                         <td class="action-buttons">
-                            <button onclick="window.location.href='edit_student.php?id=<?php echo $student['user_id']; ?>'">Edit</button>
+                            <button onclick="window.location.href='edit_student.php?id=<?php echo $student['idno']; ?>'">Edit</button>
                             <form action="a-students.php" method="post" style="display:inline;">
-                                <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($student['user_id']); ?>">
+                                <input type="hidden" name="idno" value="<?php echo htmlspecialchars($student['idno']); ?>">
                                 <button type="submit" name="delete_student">Delete</button>
                             </form>
                         </td>
@@ -249,6 +251,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_student'])) {
             <span class="close" onclick="closeModal('addStudentModal')">&times;</span>
             <h2 style="text-align: center; color: #333;">Add Student</h2>
             <form action="a-students.php" method="post">
+                <label for="idno">ID Number:</label>
+                <input type="text" id="idno" name="idno" required>
                 <label for="firstname">First Name:</label>
                 <input type="text" id="firstname" name="firstname" required>
                 <label for="lastname">Last Name:</label>
@@ -256,10 +260,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_student'])) {
                 <label for="year">Year:</label>
                     <select id="year" name="year" required>
                         <option value="">Select Year</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
+                        <option value="1">1st</option>
+                        <option value="2">2nd</option>
+                        <option value="3">3rd</option>
+                        <option value="4">4th</option>
                     </select>
                 </label>
                 <label for="course">Course:</label>

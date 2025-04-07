@@ -2,36 +2,14 @@
 include 'config/db.php'; // Assuming you have a file for database connection
 
 // Fetch user information from the database
-$user_id = $_SESSION['user_id'];
-$query = "SELECT user_id AS USER_ID, firstname AS FIRSTNAME, lastname AS LASTNAME, session AS remaining_sessions, profile_pic FROM users WHERE user_id = '$user_id'";
+$idno = $_SESSION['idno'];
+$query = "SELECT idno AS idno, firstname AS FIRSTNAME, lastname AS LASTNAME, session AS remaining_sessions, profile_pic FROM users WHERE idno = '$idno'";
 $result = mysqli_query($conn, $query);
 $user = mysqli_fetch_assoc($result);
 
 $student_name = $user['FIRSTNAME'] . " " . $user['LASTNAME'];
 $remaining_sessions = $user['remaining_sessions'];
 $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'img/default.png';
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $purpose = $_POST['purpose'];
-    $lab = $_POST['lab'];
-    $time_in = $_POST['time_in'];
-    $date = $_POST['date'];
-
-    // Insert reservation into the database with pending status
-    $stmt = $conn->prepare("INSERT INTO reservations (user_id, purpose, lab, time_in, date, status) VALUES (?, ?, ?, ?, ?, 'pending')");
-    $stmt->bind_param("issss", $user_id, $purpose, $lab, $time_in, $date);
-    if ($stmt->execute()) {
-        echo "<script>
-            alert('Reservation request submitted! Please wait for admin approval.');
-            setTimeout(function() {
-                window.location.href = 'reservation.php';
-            }, 2000); // 2-second delay before redirect
-        </script>";
-    } else {
-        echo "<script>alert('Error: " . $stmt->error . "');</script>";
-    }
-    $stmt->close();
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -116,30 +94,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             color: white;
             margin: -30px -30px 20px -30px;
         }
-        label { 
-            font-weight: bold; 
-            display: block; 
-            margin-top: 10px; 
-        }
-        input, select, button { 
-            width: 100%; 
-            padding: 10px; 
-            margin-top: 5px; 
-            border: 1px solid #ccc; 
-            border-radius: 5px;         
-        }
-        button { 
-            background-color: #4d5572; 
-            color: white; 
-            border: none; 
-            cursor: pointer; 
-            margin-top: 20px; 
-            padding: 15px; 
+        p { 
+            text-align: center; 
             font-size: 16px; 
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #3a4256;
+            color: #333; 
         }
     </style>
 </head>
@@ -160,28 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="container">
         <div class="form-container">
             <h2>Reservation</h2>
-            <form action="" method="POST">
-                <label>ID Number:</label>
-                <input type="text" value="<?php echo htmlspecialchars($user_id); ?>" readonly>
-                <label>Student Name:</label>
-                <input type="text" value="<?php echo htmlspecialchars($student_name); ?>" readonly>
-                <label>Purpose:</label>
-                <select name="purpose">
-                    <option>C Programming</option>
-                    <option>Python</option>
-                    <option selected>ASP .net</option>
-                    <option>Java</option>
-                </select>
-                <label>Lab:</label>
-                <input type="text" name="lab" required>
-                <label>Time In:</label>
-                <input type="time" name="time_in" required>
-                <label>Date:</label>
-                <input type="date" name="date" required>
-                <label>Remaining Session:</label>
-                <input type="text" value="<?php echo htmlspecialchars($remaining_sessions); ?>" readonly>
-                <button type="submit">Reserve</button>
-            </form>
+            <p>The reservation feature is temporarily unavailable. Please contact the admin for assistance.</p>
         </div>
     </div>
 </body>
