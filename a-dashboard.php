@@ -52,13 +52,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['announcement'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
-            padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['announcement'])) {
         }
 
         .nav-container {
-            width: 200px;
+            width: 240px;
             background: rgba(255, 255, 255, 0.1); /* Transparent background */
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
             backdrop-filter: blur(1px); /* Frosted glass effect */
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['announcement'])) {
             text-decoration: none;
             color:rgb(1, 23, 13);
             font-size: 16px;
-            margin: 30px 0;
+            margin: 23.5px 0;
             padding: 10px;
             border-radius: 5px;
             transition: background-color 0.3s ease;
@@ -108,18 +108,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['announcement'])) {
         }
 
         .logo {
-            margin: 50px auto;
+            margin: 25px auto;
             text-align: center;
         }
 
         .logo img {
-            width: 90px;
-            height: 90px; /* Set height to make it circular */
+            width: 70px;
+            height: 70px; /* Set height to make it circular */
             object-fit: cover; /* Ensure the image covers the area */
             border-radius: 50%;
             border: 2px solid #475E53; /* Border around the image */
         }
-        header {
+        .header {
             position: fixed;
             top: 0;
             left: 0;
@@ -129,184 +129,109 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['announcement'])) {
             padding: 10px 0;
             text-align: center;
             z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add shadow for better visibility */
         }
         .container {
-            display: flex;
             flex-direction: column;
             gap: 20px;
-            padding: 20px;
+            padding: 50px;
             justify-content: center;
             position: relative;
-            padding-top: 60px; /* Space for the header, adjust if needed */
         }
 
         .top-section {
             display: flex;
-            gap: 10px;
+            gap: 50px;
+            justify-content: center;
+            align-items: stretch;
+            margin-top: 30px;
         }
 
+
         .box {
-            background: white;
-            padding: 20px;
+            padding: 35px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 45%;
-            border: 3px solid #929292; /* Purple Border */
+            width: 50%;
+            flex: 1;
+            border: 3px solid #475E53;
+            display: flex;
+            flex-direction: column;
+            text-align: justify;
+            background: rgba(255, 255, 255, 0.1); /* Transparent background */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            backdrop-filter: blur(10px); /* Frosted glass effect */
         }
 
         .announcement textarea {
             width: 100%;
             padding: 10px;
+            margin-top: 20px;
             margin-bottom: 10px;
         }
 
         .announcement button {
             width: 100%;
             padding: 10px;
-            background:rgb(187, 0, 255);
+            background-color:#475E53;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin-bottom: 20px;;
         }
 
         .announcement button:hover {
-            background:rgb(85, 104, 123);
+            background-color:#DEE9DC;
+            color: seagreen;
         }
 
         .announcement-list {
             max-height: 200px;
             overflow-y: auto;
-            border-top: 1px solid #ccc;
+            border-top: 2px solid #475E53;
             margin-top: 10px;
             padding-top: 10px;
         }
 
         .success-message {
             color: green;
-            margin-top: 10px;
+            margin: 10px 0 10px 0;
+            text-align: justify;;
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.4);
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 10% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 30%;
-            border-radius: 8px;
-        }
-
-        .close {
-            float: right;
-            font-size: 28px;
-            cursor: pointer;
-        }
-
-        button { cursor: pointer; }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 10% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 30%;
-            border-radius: 8px;
-        }
-
-        .close {
-            float: right;
-            font-size: 28px;
-            cursor: pointer;
-        }
-
-        .modal h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            background-color: #4d5572;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        .modal label {
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
-        }
-
-        .modal input, .modal select, .modal button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .modal button {
-            background-color: #4d5572;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .modal button:hover {
-            background-color: #3a4256;
-        }
     </style>
 </head>
-<body>
-        <header>
-            <h1 >Admin Dashboard</h1>
-        </header>
+<body>    
     <nav class="nav-container"> 
         <div class="logo">
             <img src="img/ccs.png" alt="Logo" style="width: 100px; height: auto; margin-bottom: 20px;">
         </div>      
-            <a href="a-dashboard.php">Home</a>
-            <a href="#" onclick="openModal('searchModal')">Search</a>
-            <a href="a-students.php">Students</a>
-            <a href="a-currents.php">Current Sit-in</a>
-            <a href="a-vrecords.php">Visit Records</a>
-            <a href="a-feedback.php">Feedback</a>
-            <a href="a-reports.php">Reports</a>
-            <a href="a-logout.php">Logout</a>
+            <a href="a-dashboard.php"class="active"><i class="fas fa-user"></i><span>Home</span></a>
+            <a href="#" onclick="openModal('searchModal')"><i class="fas fa-search"></i> <span>Search</span></a>
+            <a href="a-students.php"><i class="fas fa-users"></i> <span>Students</span></a>
+            <a href="a-currents.php"><i class="fas fa-user-clock"></i> <span>Current Sit-in</span></a>
+            <a href="a-vrecords.php"><i class="fas fa-book"></i> <span>Visit Records</span></a>
+            <a href="a-feedback.php"><i class="fas fa-comments"></i> <span>Feedback</span></a>
+            <a href="a-reports.php"><i class="fas fa-chart-line"></i> <span>Reports</span></a>
+            <a href="a-logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
     </nav>
 
     <div class="container">
+        <div class="header-container">
+            <header>
+                <h1 >Admin Dashboard</h1>
+            </header>
+        </div>
 
     <div class="top-section">
-        <!-- Statistics Section -->
+        <!-- Statistics Section --> 
         <div class="box stats">
-            <h3>Statistics</h3>
-            <h2><?php echo $current_sit_in; ?></h2>
-            <p>Currently Sit-in Students</p>
-            <h2><?php echo $students_count; ?></h2>
-            <p>Registered Students</p>
-            <canvas id="purposeChart" width="300" height="200"></canvas>
+            <h1>Statistics</h1>
+            <p>Currently Sit-in Students:  <?php echo $current_sit_in; ?></p>            
+            <p> Registered Students     :  <?php echo $students_count; ?></p>
+            <p> Total Sit-in            :  <?php echo $total_sit_in; ?></p>
+            
+            <canvas id="purposeChart" width="300" height="200" style="margin: 20px;"></canvas>
             <script>
                 const ctx = document.getElementById('purposeChart').getContext('2d');
                 const purposeChart = new Chart(ctx, {
@@ -317,9 +242,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['announcement'])) {
                             label: 'No. of Students',
                             data: <?php echo json_encode(array_values($purpose_stats)); ?>,
                             backgroundColor: [
-                                '#4d5572', '#6c757d', '#007bff', '#28a745', '#ffc107', '#dc3545'
+                                '#DEE9DC', '#C5D4C3', '#9AAE97', '#81967F', '#000000', '#475E53 '
                             ],
-                            borderColor: '#fff',
+                            borderColor: '#475E53',
                             borderWidth: 1
                         }]
                     },

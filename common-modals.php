@@ -1,11 +1,99 @@
+
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+        margin: 10% auto;
+        padding: 20px;
+        border: 2px solid #475E53;
+        width: 30%;
+        border-radius: 8px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+        background-color:#BACEAB;
+        color:rgb(11, 27, 3);
+    }
+
+    .close {
+        float: right;
+        font-size: 28px;
+        cursor: pointer;
+        padding: 10px;
+        color: white;
+    }
+
+    .modal h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        background-color: #475E53;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .modal label {
+        font-weight: bold;
+        display: block;
+        margin-top: 10px;
+    }
+
+    .modal input, .modal select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .buttons { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-top: 15px; 
+        }
+        .save-btn, .cancel-btn { 
+            padding: 10px 15px; 
+            border: none; 
+            cursor: pointer; 
+            flex: 1;
+            border-radius: 5px; 
+            font-size: 14px; 
+        }
+        .save-btn { 
+            background-color: #475E53; 
+            color: white; 
+            margin-right: 5px; 
+        }
+        .cancel-btn { 
+            background-color: #9AAE97; 
+            color:rgb(31, 44, 37); 
+            margin-left: 5px; 
+        }
+        .save-btn:hover { 
+            background-color: #DEE9DC; 
+            color: seagreen;  
+        }
+        .cancel-btn:hover { 
+            background-color: #DEE9DC; 
+            color: seagreen;  
+        }
+</style>
+
+
 <div id="searchModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal('searchModal')">&times;</span>
         <h2>Search Student</h2>
-        <form id="searchForm">
-            <label for="searchQuery">Enter ID Number:</label>
+        <form id="searchForm" style="display: flex; align-items: center; gap: 10px;">
             <input type="text" id="searchQuery" placeholder="Enter ID Number" required>
-            <button type="button" onclick="searchStudent()">Search</button>
+            <button type="button" class="save-btn" onclick="searchStudent()">Search</button>
         </form>
     </div>
 </div>
@@ -34,8 +122,11 @@
                 <option value="542">542</option>
                 <option value="540">540</option>
             </select>
-            <button type="submit" name="approve_sit_in">Approve</button>
-            <button type="button" onclick="closeModal('sitInModal')">Disapprove</button>
+            
+            <div class="buttons">
+                    <button type="submit" class="save-btn"  name="approve_sit_in">Approve</button>
+                    <button type="button" class="cancel-btn" onclick="closeModal('sitInModal')">Disapprove</button>
+            </div>
         </form>
     </div>
 </div>
@@ -73,66 +164,3 @@
         }
     }
 </script>
-
-<style>
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.4);
-    }
-
-    .modal-content {
-        background-color: white;
-        margin: 10% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 30%;
-        border-radius: 8px;
-    }
-
-    .close {
-        float: right;
-        font-size: 28px;
-        cursor: pointer;
-    }
-
-    .modal h2 {
-        text-align: center;
-        margin-bottom: 20px;
-        background-color: #4d5572;
-        color: white;
-        padding: 10px;
-        border-radius: 5px;
-    }
-
-    .modal label {
-        font-weight: bold;
-        display: block;
-        margin-top: 10px;
-    }
-
-    .modal input, .modal select, .modal button {
-        width: 100%;
-        padding: 10px;
-        margin-top: 5px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-
-    .modal button {
-        background-color: #4d5572;
-        color: white;
-        border: none;
-        cursor: pointer;
-        margin-top: 20px;
-    }
-
-    .modal button:hover {
-        background-color: #3a4256;
-    }
-</style>

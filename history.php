@@ -48,12 +48,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>History Information</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background-image: url(img/5.jpg); /* Background image */
             background-size: cover; /* Cover the entire viewport */
             display: flex;
@@ -158,19 +159,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
             border-radius: 5px;
             resize: none;
         }
-        .feedback-form button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #475E53;
+        .action-buttons button {
+            padding: 5px 10px;
+            background-color: #4d5572;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin-right: 5px;
         }
-        .feedback-form button:hover {
-            background-color: #9AAE97;
-            color: black;
+
+        .action-buttons button:hover {
+            background-color: #3a4256;
         }
+
     </style>
 </head>
 <body>
@@ -211,12 +213,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
                                 <?php if (empty($row['feedback'])): ?>
                                     <form class="feedback-form" action="history.php" method="post">
                                         <textarea name="feedback" rows="2" placeholder="Provide your feedback..." required></textarea>
-                                        <input type="hidden" name="reservation_id" value="<?php echo $row['id']; ?>">
+                                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
                                     </form>
                                     <td class="action-buttons">
-                                        <form class="feedback-form" action="history.php" method="post">
-                                        <input type="hidden" name="reservation_id" value="<?php echo $row['id']; ?>">
-                                            <button type="submit">Submit</button>
+                                        <button onclick="window.location.href='a-feedback.php?id=<?php echo $student['idno']; ?>'">submit</button>
+                                        <form action="a-students.php" method="post" style="display:inline;">
+                                            <input type="hidden" name="idno" value="<?php echo htmlspecialchars($student['idno']); ?>">
                                         </form>
                                     </td>
                                 <?php else: ?>

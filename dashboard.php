@@ -33,12 +33,13 @@ $unread_count = $notification_data['unread_count'] ?? 0;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background-image: url(img/5.jpg); /* Background image */
             background-size: cover; /* Cover the entire viewport */
             display: flex;
@@ -51,7 +52,6 @@ $unread_count = $notification_data['unread_count'] ?? 0;
             backdrop-filter: blur(1px); /* Frosted glass effect */
             background-color:rgba(119, 152, 95, 0.54);
             color:rgb(11, 27, 3);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 10px 20px;
             border-radius: 0 20px 20px 0;
             

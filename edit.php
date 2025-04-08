@@ -28,12 +28,13 @@ $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'img/defaul
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body { 
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background-image: url(img/5.jpg); /* Background image */
             background-size: cover; /* Cover the entire viewport */
             display: flex;
@@ -167,11 +168,11 @@ $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'img/defaul
                 </div>
                 <div class="info">
                     <p><strong>ID Number:</strong> <?php echo htmlspecialchars($user['idno']); ?></p>
-                    <p><strong>Name:</strong> <?php echo htmlspecialchars($full_name); ?></p>
+                    <p><strong>Name     ~:</strong> <?php echo htmlspecialchars($full_name); ?></p>
                     <p><strong>Year Level:</strong> <?php echo htmlspecialchars($user['YEAR']); ?></p>
-                    <p><strong>Course:</strong> <?php echo htmlspecialchars($user['COURSE']); ?></p>
-                    <p><strong>Email:</strong> <?php echo htmlspecialchars($user['EMAIL']); ?></p>
-                    <p><strong>Address:</strong> <?php echo htmlspecialchars($user['ADDRESS']); ?></p>
+                    <p><strong>Course    :</strong> <?php echo htmlspecialchars($user['COURSE']); ?></p>
+                    <p><strong>Email     :</strong> <?php echo htmlspecialchars($user['EMAIL']); ?></p>
+                    <p><strong>Address   :</strong> <?php echo htmlspecialchars($user['ADDRESS']); ?></p>
                 </div>
                     <button class="edit-btn" onclick="window.location.href='edit-profile.php'">Edit Profile</button>
             </div>

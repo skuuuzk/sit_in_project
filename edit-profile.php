@@ -98,12 +98,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body { 
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background-image: url(img/5.jpg); /* Background image */
             background-size: cover; /* Cover the entire viewport */
             display: flex;
@@ -223,20 +224,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-size: 14px; 
         }
         .save-btn { 
-            background-color: #4d5572; 
+            background-color: #475E53; 
             color: white; 
             margin-right: 5px; 
         }
         .cancel-btn { 
-            background-color: #4d5572a4; 
-            color: white; 
+            background-color: #C5D4C3; 
+            color: seagreen; 
             margin-left: 5px; 
         }
         .save-btn:hover { 
-            background-color: #1565C0; 
+            background-color: #DEE9DC; 
+            color: seagreen;  
         }
         .cancel-btn:hover { 
-            background-color: #B71C1C; 
+            background-color: #DEE9DC; 
+            color: seagreen;  
         }
     </style>
 </head>

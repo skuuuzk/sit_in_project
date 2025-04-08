@@ -38,94 +38,100 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #92929288;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Reservation</title>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-        .container {
-            background: whitesmoke;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-            border: #4d5572 2px solid;
-        }
+    <style>
+            body {
+                font-family: 'Poppins', sans-serif;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background-color: #92929288;
+            }
 
-        .container h3 {
-            text-align: center;
-            margin-bottom: 30px;
-            background-color: #4d5572;
-            border-radius: 5px 5px 0 0;
-            padding: 5px;
-            color: white;
-        }
+            .container {
+                background: whitesmoke;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                width: 100%;
+                max-width: 600px;
+                text-align: center;
+                border: #4d5572 2px solid;
+            }
 
-        .container .form-group {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
+            .container h3 {
+                text-align: center;
+                margin-bottom: 30px;
+                background-color: #4d5572;
+                border-radius: 5px 5px 0 0;
+                padding: 5px;
+                color: white;
+            }
 
-        .container .form-group .form-field {
-            width: 48%;
-        }
+            .container .form-group {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
 
-        .container label {
-            font-weight: bold;
-            display: block;
-            margin-top: 15px;
-            text-align: left;
-        }
+            .container .form-group .form-field {
+                width: 48%;
+            }
 
-        .container input,
-        .container select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
+            .container label {
+                font-weight: bold;
+                display: block;
+                margin-top: 15px;
+                text-align: left;
+            }
 
-        .container button {
-            width: 100%;
-            padding: 15px;
-            background-color: #4d5572;
-            color: whitesmoke;
-            border: none;
-            cursor: pointer;
-            margin-top: 20px;
-            font-size: 16px;
-            border-radius: 5px;
-        }
+            .container input,
+            .container select {
+                width: 100%;
+                padding: 10px;
+                margin-top: 5px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                box-sizing: border-box;
+            }
 
-        .container button:hover {
-            background-color: #4d5572b0;
-            color: black;
-        }
+            .container button {
+                width: 100%;
+                padding: 15px;
+                background-color: #4d5572;
+                color: whitesmoke;
+                border: none;
+                cursor: pointer;
+                margin-top: 20px;
+                font-size: 16px;
+                border-radius: 5px;
+            }
 
-        .container .back-to-login {
-            margin-top: 10px;
-            display: block;
-            color: black;
-            text-decoration: none;
-        }
+            .container button:hover {
+                background-color: #4d5572b0;
+                color: black;
+            }
 
-        .container .back-to-login:hover {
-            text-decoration: none;
-        }
-    </style>
+            .container .back-to-login {
+                margin-top: 10px;
+                display: block;
+                color: black;
+                text-decoration: none;
+            }
+
+            .container .back-to-login:hover {
+                text-decoration: none;
+            }
+        </style>
 </head>
 <body class="d-flex justify-content-center align-items-center vh-100 bg-light">
     <div class="container bg-white p-4 rounded shadow" style="max-width: 600px;">
