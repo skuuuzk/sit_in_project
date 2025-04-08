@@ -51,25 +51,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body {
-            display: flex;
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #92929288;
+            background-image: url(img/5.jpg); /* Background image */
+            background-size: cover; /* Cover the entire viewport */
+            display: flex;
+            height: 100vh;
         }
         .nav-container {
-            width: 237px;
-            background-color: whitesmoke;
+            width: 245px;
+            background: rgba(255, 255, 255, 0.1); /* Transparent background */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            backdrop-filter: blur(1px); /* Frosted glass effect */
+            background-color:rgba(119, 152, 95, 0.54);
+            color:rgb(11, 27, 3);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 10px 20px;
-            border-right: #4d5572  2px solid;
+            border-radius: 0 20px 20px 0;
         }
 
         .nav-container a {
             display: flex;
             align-items: center;
             text-decoration: none;
-            color: #333;
+            color:rgb(1, 23, 13);
             font-size: 16px;
             margin: 30px 0;
             padding: 10px;
@@ -83,13 +89,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
         }
 
         .nav-container a:hover {
-            background-color: #929292;
-            color: white;
+            background-color:#DEE9DC;
+            color: seagreen;   
         }
 
         .nav-container a.active {
             font-weight: bold;
-            background-color: #e0e0e0;
+            background-color: #BACEAB;
         }
 
         .logo {
@@ -98,7 +104,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
         }
 
         .logo img {
-            width: 80px;
+            width: 90px;
+            height: 90px; /* Set height to make it circular */
+            object-fit: cover; /* Ensure the image covers the area */
+            border-radius: 50%;
+            border: 2px solid #475E53; /* Border around the image */
         }
         .container {
             margin: auto;
@@ -110,20 +120,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
         }
 
         .form-container {
-            background: whitesmoke;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.1); /* Transparent background */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            backdrop-filter: blur(10px); /* Frosted glass effect */
             width: 100%;
             max-width: 800px;
-            border: 3px solid #929292;
+            border: 3px solid #475E53;
         }
         .form-container h2 {
             text-align: center;
             margin-bottom: 20px;
-            padding: 5px;
-            background-color: #4d5572;
+            background-color: #475E53;
             border-radius: 5px 5px 0 0;
+            padding: 10px;
             color: white;
         }
         table {
@@ -133,35 +144,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
             border-radius: 10px;
         }
         th, td {
-            border: 1px solid #333;
+            border: 2px solid #475E53;
             padding: 10px;
             text-align: left;
         }
         th {
-            background-color: whitesmoke;
-            color: #333;
-        }
-        .feedback-form {
-            margin-top: 10px;
+            background-color: #DEE9DC;
+            color: #475E53;
         }
         .feedback-form textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #475E53;
             border-radius: 5px;
             resize: none;
         }
         .feedback-form button {
             margin-top: 10px;
             padding: 10px 20px;
-            background-color: #4d5572;
+            background-color: #475E53;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
         .feedback-form button:hover {
-            background-color: #3a4256;
+            background-color: #9AAE97;
+            color: black;
         }
     </style>
 </head>
@@ -204,8 +212,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
                                     <form class="feedback-form" action="history.php" method="post">
                                         <textarea name="feedback" rows="2" placeholder="Provide your feedback..." required></textarea>
                                         <input type="hidden" name="reservation_id" value="<?php echo $row['id']; ?>">
-                                        <button type="submit">Submit</button>
                                     </form>
+                                    <td class="action-buttons">
+                                        <form class="feedback-form" action="history.php" method="post">
+                                        <input type="hidden" name="reservation_id" value="<?php echo $row['id']; ?>">
+                                            <button type="submit">Submit</button>
+                                        </form>
+                                    </td>
                                 <?php else: ?>
                                     <?php echo htmlspecialchars($row['feedback']); ?>
                                 <?php endif; ?>

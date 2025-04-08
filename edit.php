@@ -30,58 +30,114 @@ $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'img/defaul
     <title>Edit Profile</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-body { display: flex; margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #92929288; }        
-        .nav-container { width: 237px; background-color: whitesmoke; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); padding: 10px 20px; border-right: #4d5572  2px solid; }
-        .nav-container a { display: flex; align-items: center; text-decoration: none; color: #333; font-size: 16px; margin: 30px 0; padding: 10px; border-radius: 5px; transition: background-color 0.3s ease; }
-        .nav-container a i { margin-right: 10px; font-size: 18px; }
-        .nav-container a:hover { background-color: #929292; color: white; }
-        .nav-container a.active { font-weight: bold; background-color: #e0e0e0; }
-        .logo { margin: 50px auto; text-align: center; }
-        .logo img { width: 80px; }
-        .container { margin:auto; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100%; }
-        .edit-profile-card { background-color: whitesmoke; width: 600px; padding: 20px; text-align: center; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); border: 3px solid #929292; }
+        body { 
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-image: url(img/5.jpg); /* Background image */
+            background-size: cover; /* Cover the entire viewport */
+            display: flex;
+            height: 100vh;
+        }        
+        .nav-container { 
+            width: 237px; 
+            background: rgba(255, 255, 255, 0.1); /* Transparent background */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            backdrop-filter: blur(1px); /* Frosted glass effect */
+            background-color:rgba(119, 152, 95, 0.54);
+            color:rgb(11, 27, 3);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            border-radius: 0 20px 20px 0;
+        }
+        .nav-container a { 
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color:rgb(1, 23, 13);
+            font-size: 16px;
+            margin: 30px 0;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .nav-container a i { 
+            margin-right: 10px; 
+            font-size: 18px; 
+        }
+        .nav-container a:hover { 
+            background-color:#DEE9DC;
+            color: seagreen;      
+        }
+        .nav-container a.active { 
+            font-weight: bold;
+            background-color: #BACEAB;
+        }
+        .logo { 
+            margin: 50px auto; 
+            text-align: center; 
+        }
+        .logo img { 
+            width: 90px;
+            height: 90px; /* Set height to make it circular */
+            object-fit: cover; /* Ensure the image covers the area */
+            border-radius: 50%;
+            border: 2px solid #475E53; /* Border around the image */
+        }
+        .container { 
+            margin:auto; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            width: 100%; 
+        }
 
         .student {
-            background-color: whitesmoke;
             width: 350px;
-            padding: 20px;
+            margin: 90px auto;
+            height: auto;
+            padding: 25px;
+            border-radius: 10px;
             text-align: center;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            border: 3px solid #4d5572;
+            border: 3px solid #475E53;
         }
         .title {
-            background-color: #4d5572;
+            background-color: #475E53;
             color: white;
             padding: 5px;
             border-radius: 5px 5px 0 0;
             margin-bottom: 20px;
         }
         .profile-img img {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px; /* Set height to make it circular */
+            object-fit: cover; /* Ensure the image covers the area */
             border-radius: 50%;
-            object-fit: cover;
-            background-color: black;
+            border: 2px solid #475E53; /* Border around the image */
         }
         .info p {
-            margin: 5px 0;
-            font-size: 14px;
+            margin: 10px 0;
+            text-align: justify; 
+
         }
         .edit-btn {
-            background-color: #4d5572;
+            background-color: #475E53;
             color: white;
             padding: 10px 15px;
             border: none;
             cursor: pointer;
             width: 100%;
             border-radius: 5px;
-            font-size: 14px;
             margin-top: 10px;
             transition: 0.3s;
         }
         .edit-btn:hover {
-            background-color: #929292;
+            background-color: #DEE9DC;
+            color: seagreen;       
+
         }
     </style>
 </head>

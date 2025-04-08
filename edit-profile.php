@@ -100,29 +100,144 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Edit Profile</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        body { display: flex; margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #92929288; }        
-        .nav-container { width: 237px; background-color: whitesmoke; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); padding: 10px 20px; border-right: #4d5572  2px solid; }
-        .nav-container a { display: flex; align-items: center; text-decoration: none; color: #333; font-size: 16px; margin: 30px 0; padding: 10px; border-radius: 5px; transition: background-color 0.3s ease; }
-        .nav-container a i { margin-right: 10px; font-size: 18px; }
-        .nav-container a:hover { background-color: #929292; color: white; }
-        .nav-container a.active { font-weight: bold; background-color: #e0e0e0; }
-        .logo { margin: 50px auto; text-align: center; }
-        .logo img { width: 80px; }
-        .container { margin:auto; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100%; }
-        .edit-profile-card { background-color: whitesmoke; width: 600px; padding: 20px; text-align: center; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); border: 3px solid #929292; }
-        .title { text-align: center; margin-bottom: 20px; background-color: #4d5572; border-radius: 5px 5px 0 0; padding: 5px; color: white; }
-        .profile-img img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; background-color: #929292; }
-        form { text-align: left; padding: 10px; }
-        .form-group { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 25px; }
-        .form-group .form-field { width: 47%; margin-bottom: 10px; }
-        label { font-weight: 600; display: block; margin: 8px 0 3px; }
-        input, select { width: 100%; padding: 8px; border: 1px solid #929292; border-radius: 5px; }
-        .buttons { display: flex; justify-content: space-between; margin-top: 15px; }
-        .save-btn, .cancel-btn { padding: 10px 15px; border: none; cursor: pointer; flex: 1; border-radius: 5px; font-size: 14px; }
-        .save-btn { background-color: #4d5572; color: white; margin-right: 5px; }
-        .cancel-btn { background-color: #4d5572a4; color: white; margin-left: 5px; }
-        .save-btn:hover { background-color: #1565C0; }
-        .cancel-btn:hover { background-color: #B71C1C; }
+        body { 
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-image: url(img/5.jpg); /* Background image */
+            background-size: cover; /* Cover the entire viewport */
+            display: flex;
+            height: 100vh;
+        }        
+        .nav-container { 
+            width: 237px; 
+            background: rgba(255, 255, 255, 0.1); /* Transparent background */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            backdrop-filter: blur(1px); /* Frosted glass effect */
+            background-color:rgba(119, 152, 95, 0.54);
+            color:rgb(11, 27, 3);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            border-radius: 0 20px 20px 0;
+        }
+        .nav-container a { 
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color:rgb(1, 23, 13);
+            font-size: 16px;
+            margin: 30px 0;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .nav-container a i { 
+            margin-right: 10px; 
+            font-size: 18px; 
+        }
+        .nav-container a:hover { 
+            background-color:#DEE9DC;
+            color: seagreen;  
+        }
+        .nav-container a.active { 
+            font-weight: bold; 
+            background-color: #BACEAB; 
+        }
+        .logo { 
+            margin: 50px auto; 
+            text-align: center; 
+        }
+        .logo img { 
+            width: 90px;
+            height: 90px; /* Set height to make it circular */
+            object-fit: cover; /* Ensure the image covers the area */
+            border-radius: 50%;
+            border: 2px solid #475E53; /* Border around the image */
+        }
+        .container { 
+            margin:auto; 
+            display: flex; 
+            justify-content: center; 
+            align-items: stretch; 
+            height: 100vh; 
+            width: 100%; 
+        }
+        .edit-profile-card { 
+            width: 500px;
+            height: auto; 
+            padding: 35px; 
+            display: flex;
+            flex-direction: column;
+            text-align: justify; 
+            border-radius: 10px; 
+            background: rgba(255, 255, 255, 0.1); /* Transparent background */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+            border: 3px solid #929292;
+            overflow: clip; 
+        }
+        .title { 
+            text-align: center;
+            background-color: #475E53;
+            border-radius: 5px 5px 0 0;
+            padding: 10px;
+            color: white;
+        }
+        /* General styling for form groups */
+        .form-group {
+            margin-bottom: auto;
+        }
+
+        /* For row layout: First Name, Last Name, Middle Name side by side */
+        .row {
+            display: flex;
+            gap: 30px; /* Adjust the gap between columns */
+        }
+
+        .col {
+            flex: 1; /* Each column takes equal space */
+        }
+
+        /* To make sure the select elements are aligned correctly in the same row */
+        select, input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 5px;
+        }
+
+        label { 
+            font-weight: 600; 
+            display: block; 
+            margin: 5px 0 3px; 
+        }
+        .buttons { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-top: 15px; 
+        }
+        .save-btn, .cancel-btn { 
+            padding: 10px 15px; 
+            border: none; 
+            cursor: pointer; 
+            flex: 1;
+            border-radius: 5px; 
+            font-size: 14px; 
+        }
+        .save-btn { 
+            background-color: #4d5572; 
+            color: white; 
+            margin-right: 5px; 
+        }
+        .cancel-btn { 
+            background-color: #4d5572a4; 
+            color: white; 
+            margin-left: 5px; 
+        }
+        .save-btn:hover { 
+            background-color: #1565C0; 
+        }
+        .cancel-btn:hover { 
+            background-color: #B71C1C; 
+        }
     </style>
 </head>
 <body>
@@ -139,56 +254,87 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <a href="notification.php"><i class="fas fa-bell"></i><span>Notifications</span></a>
         <a href="logout.php"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
     </div>
+
     <div class="container">
         <div class="edit-profile-card">
             <h2 class="title">Edit Profile</h2>
             <form action="edit-profile.php" method="post" enctype="multipart/form-data">
-                <label>ID Number:</label>
-                <input type="text" name="idno" value="<?php echo htmlspecialchars($user['idno']); ?>" readonly>
 
-                <label>First Name:</label>
-                <input type="text" name="firstname" value="<?php echo htmlspecialchars($user['firstname']); ?>" required>
+            <!-- Profile Picture -->
+            <div class="form-group">
 
-                <label>Last Name:</label>
-                <input type="text" name="lastname" value="<?php echo htmlspecialchars($user['lastname']); ?>" required>
+                <!-- Display current profile picture -->
+                <div class="profile-pic">
+                    <img id="profileImage" src="<?php echo htmlspecialchars($user['profile_pic']); ?>" alt="Profile Picture">
+                    <input type="file" name="profile_pic" id="profileInput" style="display: none;" onchange="previewImage(event)">
+                </div>
+            </div>
+                
+                <!-- ID Number -->
+                <div class="form-group">
+                    <label>ID Number:</label>
+                    <input type="text" name="idno" value="<?php echo htmlspecialchars($user['idno']); ?>" readonly>
+                </div>
 
-                <label>Middle Name:</label>
-                <input type="text" name="midname" value="<?php echo htmlspecialchars($user['midname']); ?>">
+                <!-- First Name, Last Name, and Middle Name (side by side) -->
+                <div class="form-group row">
+                    <div class="col">
+                        <label>First Name:</label>
+                        <input type="text" name="firstname" value="<?php echo htmlspecialchars($user['firstname']); ?>" required>
+                    </div>
+                    <div class="col">
+                        <label>Middle Name:</label>
+                        <input type="text" name="midname" value="<?php echo htmlspecialchars($user['midname']); ?>">
+                    </div>
+                    <div class="col">
+                        <label>Last Name:</label>
+                        <input type="text" name="lastname" value="<?php echo htmlspecialchars($user['lastname']); ?>" required>
+                    </div>
+                </div>
 
-                <label>Email:</label>
-                <input type="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                <!-- Year Level and Course (side by side) -->
+                <div class="form-group row">
+                    <div class="col">
+                        <label>Year Level:</label>
+                        <select name="year">
+                            <option <?php if ($user['year'] == '1st Year') echo 'selected'; ?>>1st</option>
+                            <option <?php if ($user['year'] == '2nd Year') echo 'selected'; ?>>2nd</option>
+                            <option <?php if ($user['year'] == '3rd Year') echo 'selected'; ?>>3rd</option>
+                            <option <?php if ($user['year'] == '4th Year') echo 'selected'; ?>>4th</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label>Course:</label>
+                        <select name="course">
+                            <option value="BSIT">Bachelor of Science in Information Technology</option>
+                            <option value="BSCS">Bachelor of Science in Computer Science</option>
+                            <option value="BSECE">Bachelor of Science in Electronics Engineering</option>
+                            <option value="BSCE">Bachelor of Science in Civil Engineering</option>
+                            <option value="BSME">Bachelor of Science in Mechanical Engineering</option>
+                            <option value="BSEE">Bachelor of Science in Electrical Engineering</option>
+                            <option value="BSBA">Bachelor of Science in Business Administration</option>
+                            <option value="BSA">Bachelor of Science in Accountancy</option>
+                            <option value="BSHM">Bachelor of Science in Hospitality Management</option>
+                            <option value="BSTM">Bachelor of Science in Tourism Management</option>
+                            <option value="BSN">Bachelor of Science in Nursing</option>
+                            <option value="BSED">Bachelor of Secondary Education</option>
+                            <option value="BEED">Bachelor of Elementary Education</option>
+                            <option value="BSPSY">Bachelor of Science in Psychology</option>
+                        </select>
+                    </div>
+                </div>
 
-                <label>Course:</label>
-                <select name="course">
-                        <option value="BSIT">Bachelor of Science in Information Technology</option>
-                        <option value="BSCS">Bachelor of Science in Computer Science</option>
-                        <option value="BSECE">Bachelor of Science in Electronics Engineering</option>
-                        <option value="BSCE">Bachelor of Science in Civil Engineering</option>
-                        <option value="BSME">Bachelor of Science in Mechanical Engineering</option>
-                        <option value="BSEE">Bachelor of Science in Electrical Engineering</option>
-                        <option value="BSBA">Bachelor of Science in Business Administration</option>
-                        <option value="BSA">Bachelor of Science in Accountancy</option>
-                        <option value="BSHM">Bachelor of Science in Hospitality Management</option>
-                        <option value="BSTM">Bachelor of Science in Tourism Management</option>
-                        <option value="BSN">Bachelor of Science in Nursing</option>
-                        <option value="BSED">Bachelor of Secondary Education</option>
-                        <option value="BEED">Bachelor of Elementary Education</option>
-                        <option value="BSPSY">Bachelor of Science in Psychology</option>
-                </select>
-
-                <label>Year Level:</label>
-                <select name="year">
-                    <option <?php if ($user['year'] == '1st Year') echo 'selected'; ?>>1st</option>
-                    <option <?php if ($user['year'] == '2nd Year') echo 'selected'; ?>>2nd</option>
-                    <option <?php if ($user['year'] == '3rd Year') echo 'selected'; ?>>3rd</option>
-                    <option <?php if ($user['year'] == '4th Year') echo 'selected'; ?>>4th</option>
-                </select>
-
-                <label>Address:</label>
-                <input type="text" name="address" value="<?php echo htmlspecialchars($user['address']); ?>" required>
-
-                <label>Profile Picture:</label>
-                <input type="file" name="profile_pic">
+                <!-- Address -->
+                <div class="form-group">
+                    <div class="col">
+                        <label>Email:</label>
+                        <input type="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                    </div>
+                    <div class="col">
+                        <label>Address:</label>
+                        <input type="text" name="address" value="<?php echo htmlspecialchars($user['address']); ?>" required>
+                    </div>
+                </div>
 
                 <div class="buttons">
                     <button type="submit" class="save-btn">Save Changes</button>
@@ -197,5 +343,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </form>
         </div>
     </div>
+    <script>
+    // Change the image when the user clicks the profile picture
+        document.getElementById('profileImage').onclick = function() {
+            document.getElementById('profileInput').click();
+        };
+
+        // Preview the selected image before submitting the form
+        function previewImage(event) {
+            var output = document.getElementById('profileImage');
+            output.src = URL.createObjectURL(event.target.files[0]);
+        }
+    </script>
 </body>
 </html>

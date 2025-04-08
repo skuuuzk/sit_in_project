@@ -21,6 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['approve_sit_in'])) {
     $stmt->execute();
     $stmt->close();
 
+    // Deduct one session from the student's available sessions
+    $stmt = $conn->prepare("UPDATE users SET session = session - 1 WHERE idno = ? AND session > 0");
+    $stmt->bind_param("s", $idno);
+    $stmt->execute();
+    $stmt->close();
+
     // Send notification to the student
     $notification = "Your sit-in reservation has been approved.";
     $stmt = $conn->prepare("INSERT INTO notifications (idno, message) VALUES (?, ?)");

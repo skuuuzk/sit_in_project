@@ -43,25 +43,31 @@ $stmt->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body {
-            display: flex;
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #92929288;
+            background-image: url(img/5.jpg); /* Background image */
+            background-size: cover; /* Cover the entire viewport */
+            display: flex;
+            height: 100vh;
         }
         .nav-container {
             width: 237px;
-            background-color: whitesmoke;
+            background: rgba(255, 255, 255, 0.1); /* Transparent background */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            backdrop-filter: blur(1px); /* Frosted glass effect */
+            background-color:rgba(119, 152, 95, 0.54);
+            color:rgb(11, 27, 3);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 10px 20px;
-            border-right: #4d5572  2px solid;
+            border-radius: 0 20px 20px 0;
         }
 
         .nav-container a {
             display: flex;
             align-items: center;
             text-decoration: none;
-            color: #333;
+            color:rgb(1, 23, 13);
             font-size: 16px;
             margin: 30px 0;
             padding: 10px;
@@ -75,13 +81,13 @@ $stmt->close();
         }
 
         .nav-container a:hover {
-            background-color: #929292;
-            color: white;
+            background-color:#DEE9DC;
+            color: seagreen;    
         }
 
         .nav-container a.active {
             font-weight: bold;
-            background-color: #e0e0e0;
+            background-color: #BACEAB;
         }
 
         .logo {
@@ -90,16 +96,21 @@ $stmt->close();
         }
 
         .logo img {
-            width: 80px;
+            width: 90px;
+            height: 90px; /* Set height to make it circular */
+            object-fit: cover; /* Ensure the image covers the area */
+            border-radius: 50%;
+            border: 2px solid #475E53; /* Border around the image */
         }
 
         .container {
             margin:auto;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: stretch;
             height: 100vh;
             width: 100%;
+            overflow: hidden;
         }
 
         .notification-card {
@@ -108,14 +119,18 @@ $stmt->close();
             padding: 20px;
             text-align: center;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            border: 3px solid #929292;
+            border: 3px solid #475E53;
+            background: rgba(255, 255, 255, 0.1); /* Transparent background */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+            overflow: hidden;
+            overflow: auto; 
         }
 
         .title {
             text-align: center;
             margin-bottom: 20px;
-            background-color: #4d5572;
+            background-color: #475E53;
             border-radius: 5px 5px 0 0;
             padding: 5px;
             color: white;
@@ -128,7 +143,7 @@ $stmt->close();
         .notification-item {
             margin-bottom: 10px;
             padding: 10px;
-            border-bottom: 1px solid #ccc;
+            border-bottom: 1px solid #475E53;
         }
 
         .notification-item:last-child {

@@ -41,27 +41,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f0f0f0;
+            background-image: url(img/5.jpg); /* Background image */
+            background-size: cover; /* Cover the entire viewport */
         }
 
         .login-container {
-            background: whitesmoke;
+            background: rgba(255, 255, 255, 0.1); /* Transparent background */
+            
+            color:#DEE9DC;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
             text-align: center;
-            border: #4d5572 2px solid;
+            border: #475E53 2px solid;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            backdrop-filter: blur(10px); /* Frosted glass effect */
         }
 
         .login-container h2 {
             text-align: center;
             margin-bottom: 30px;
-            background-color: #4d5572;
+            background-color: #475E53;
             border-radius: 5px 5px 0 0;
             padding: 5px;
-            color: white;
+            color: #DEE9DC;
         }
 
         .login-container label {
@@ -69,6 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
             display: block;
             margin-top: 15px;
             text-align: left;
+            color:rgb(39, 51, 46);
         }
 
         .login-container input {
@@ -83,17 +88,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
         .login-container button {
             width: 100%;
             padding: 15px;
-            background-color: #4d5572;
+            background-color: #475E53;
             color: whitesmoke;
             border: none;
             cursor: pointer;
             margin-top: 20px;
             font-size: 16px;
             border-radius: 5px;
+            
         }
 
         .login-container button:hover {
-            background-color: #4d5572b0;
+            background-color: #DEE9DC;
             color: black;
         }
 

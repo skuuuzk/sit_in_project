@@ -242,6 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['announcement'])) {
             <li><a href="a-vrecords.php">Visit Records</a></li>
             <li><a href="a-feedback.php">Feedback</a></li>
             <li><a href="a-reports.php">Reports</a></li>
+
             <li><a href="a-logout.php">Logout</a></li>
             <li><a href="#" onclick="openModal('searchModal')">Search</a></li>
         </ul>

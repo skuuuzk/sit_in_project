@@ -23,23 +23,28 @@ $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'img/defaul
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #92929288;
+            background-image: url(img/5.jpg); /* Background image */
+            background-size: cover; /* Cover the entire viewport */
             display: flex;
             height: 100vh;
         }        
         .nav-container {
             width: 200px;
-            background-color: whitesmoke;
+            background: rgba(255, 255, 255, 0.1); /* Transparent background */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            backdrop-filter: blur(1px); /* Frosted glass effect */
+            background-color:rgba(119, 152, 95, 0.54);
+            color:rgb(11, 27, 3);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 10px 20px;
-            border-right: #4d5572  2px solid;
+            border-radius: 0 20px 20px 0;
         }
 
         .nav-container a {
             display: flex;
             align-items: center;
             text-decoration: none;
-            color: #333;
+            color:rgb(1, 23, 13);
             font-size: 16px;
             margin: 30px 0;
             padding: 10px;
@@ -53,13 +58,13 @@ $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'img/defaul
         }
 
         .nav-container a:hover {
-            background-color: #929292;
-            color: white;       
+            background-color:#DEE9DC;
+            color: seagreen;          
         }
 
         .nav-container a.active {
             font-weight: bold;
-            background-color: #e0e0e0;
+            background-color: #BACEAB;
         }
 
         .logo {
@@ -68,7 +73,11 @@ $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'img/defaul
         }
 
         .logo img {
-            width: 80px;
+            width: 90px;
+            height: 90px; /* Set height to make it circular */
+            object-fit: cover; /* Ensure the image covers the area */
+            border-radius: 50%;
+            border: 2px solid #475E53; /* Border around the image */
         }
         .container { 
             flex: 1; 
@@ -78,17 +87,17 @@ $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'img/defaul
             padding: 20px;
         }
         .form-container { 
-            background: whitesmoke; 
             padding: 30px; 
             border-radius: 10px; 
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
-            max-width: 450px; 
+            background: rgba(255, 255, 255, 0.1); /* Transparent background */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            backdrop-filter: blur(10px); /* Frosted glass effect */            max-width: 450px; 
             width: 100%;
-            border: 2px solid #4d5572; 
+            border: 2px solid #475E53; 
         }
         .form-container h2 { 
             text-align: center;
-            background-color: #4d5572;
+            background-color: #475E53;
             border-radius: 5px 5px 0 0;
             padding: 5px;
             color: white;
@@ -97,7 +106,7 @@ $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'img/defaul
         p { 
             text-align: center; 
             font-size: 16px; 
-            color: #333; 
+             
         }
     </style>
 </head>

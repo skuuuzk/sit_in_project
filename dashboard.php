@@ -39,23 +39,29 @@ $unread_count = $notification_data['unread_count'] ?? 0;
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #92929288;
+            background-image: url(img/5.jpg); /* Background image */
+            background-size: cover; /* Cover the entire viewport */
             display: flex;
             height: 100vh;
         }        
         .nav-container {
             width: 200px;
-            background-color: whitesmoke;
+            background: rgba(255, 255, 255, 0.1); /* Transparent background */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            backdrop-filter: blur(1px); /* Frosted glass effect */
+            background-color:rgba(119, 152, 95, 0.54);
+            color:rgb(11, 27, 3);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 10px 20px;
-            border-right: #4d5572  2px solid;
+            border-radius: 0 20px 20px 0;
+            
         }
 
         .nav-container a {
             display: flex;
             align-items: center;
             text-decoration: none;
-            color: #333;
+            color:rgb(1, 23, 13);
             font-size: 16px;
             margin: 30px 0;
             padding: 10px;
@@ -69,13 +75,13 @@ $unread_count = $notification_data['unread_count'] ?? 0;
         }
 
         .nav-container a:hover {
-            background-color: #929292;
-            color: white;       
+            background-color:#DEE9DC;
+            color: seagreen;       
         }
 
         .nav-container a.active {
             font-weight: bold;
-            background-color: #e0e0e0;
+            background-color: #BACEAB;
         }
 
         .logo {
@@ -84,7 +90,11 @@ $unread_count = $notification_data['unread_count'] ?? 0;
         }
 
         .logo img {
-            width: 80px;
+            width: 90px;
+            height: 90px; /* Set height to make it circular */
+            object-fit: cover; /* Ensure the image covers the area */
+            border-radius: 50%;
+            border: 2px solid #475E53; /* Border around the image */
         }
 
         .container {
@@ -95,39 +105,39 @@ $unread_count = $notification_data['unread_count'] ?? 0;
             justify-content: center;
             align-items: stretch;
             height: 100vh;
-            width: 100%;
+            width: 100%;        
         }
 
         .box {
             margin: 90px auto;
-            background: whitesmoke;
             height: 70%;
-            padding: 20px;
+            padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             flex: 1;
-            border: 3px solid #929292;
+            border: 3px solid #475E53;
             display: flex;
             flex-direction: column;
             text-align: center;
+            background: rgba(255, 255, 255, 0.1); /* Transparent background */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+            overflow: hidden;
+            overflow: auto;             /* Vertical scrollbar appears when needed */
+                
         }
 
         h2 {
             text-align: center;
             margin-bottom: 20px;
-            background-color: #4d5572;
+            background-color: #475E53;
             border-radius: 5px 5px 0 0;
-            padding: 5px;
+            padding: 10px;
             color: white;
         }
 
         .announcement p, .rules p {
             margin: 10px 0;
-        }
-
-        .announcement span {
-            font-weight: bold;
-            color: #333;
+            text-align: justify;
         }
     </style>
 </head>
@@ -167,8 +177,8 @@ $unread_count = $notification_data['unread_count'] ?? 0;
         
         <div class="box rules">
             <h2>Rules and Regulation</h2>
-            <p><strong>University of Cebu</strong><br><strong>COLLEGE OF INFORMATION & COMPUTER STUDIES</strong></p>
-            <p><strong>LABORATORY RULES AND REGULATIONS</strong></p>
+            <h3><strong>University of Cebu</strong><br><strong>COLLEGE OF INFORMATION & COMPUTER STUDIES</strong></h3>
+            <h3><strong>LABORATORY RULES AND REGULATIONS</strong></h3>
             <p>To avoid embarrassment and maintain camaraderie with your friends and superiors at our laboratories, please observe the following:</p>
             <p>1. Maintain silence, proper decorum, and discipline inside the laboratory. Mobile phones, walkmans and other personal pieces of equipment must be switched off.</p>
             <p>2. Games are not allowed inside the lab. This includes computer-related games, card games, and other games that may disturb the operation of the lab.</p>
