@@ -62,36 +62,82 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['announcement'])) {
         }
 
         body {
-            background: #D1B8E1;
+            background-image: url(img/5.jpg); /* Background image */
+            background-size: cover; /* Cover the entire viewport */
+            display: flex;
         }
 
-        .navbar {
-            background: #7F60A8;
-            padding: 15px;
+        .nav-container {
+            width: 200px;
+            background: rgba(255, 255, 255, 0.1); /* Transparent background */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            backdrop-filter: blur(1px); /* Frosted glass effect */
+            background-color:rgba(119, 152, 95, 0.54);
+            color:rgb(11, 27, 3);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            border-radius: 0 20px 20px 0;
+            justify-content: stretch;
+        }
+
+        .nav-container a {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            color: white;
-        }
-
-        .navbar ul {
-            list-style: none;
-            display: flex;
-            gap: 15px;
-        }
-
-        .navbar ul li a {
             text-decoration: none;
-            color: white;
-            font-weight: bold;
+            color:rgb(1, 23, 13);
+            font-size: 16px;
+            margin: 30px 0;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
         }
 
+        .nav-container a i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .nav-container a:hover {
+            background-color:#DEE9DC;
+            color: seagreen;       
+        }
+
+        .nav-container a.active {
+            font-weight: bold;
+            background-color: #BACEAB;
+        }
+
+        .logo {
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .logo img {
+            width: 90px;
+            height: 90px; /* Set height to make it circular */
+            object-fit: cover; /* Ensure the image covers the area */
+            border-radius: 50%;
+            border: 2px solid #475E53; /* Border around the image */
+        }
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #4d5572; /* Background color */
+            color: white; /* Text color */
+            padding: 10px 0;
+            text-align: center;
+            z-index: 1000;
+        }
         .container {
             display: flex;
             flex-direction: column;
             gap: 20px;
             padding: 20px;
             justify-content: center;
+            position: relative;
+            padding-top: 60px; /* Space for the header, adjust if needed */
         }
 
         .top-section {
@@ -233,22 +279,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['announcement'])) {
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <h2>Admin Dashboard</h2>        
-        <ul>
-            <li><a href="a-dashboard.php">Home</a></li>
-            <li><a href="a-students.php">Students</a></li>
-            <li><a href="a-currents.php">Current Sit-in</a></li>
-            <li><a href="a-vrecords.php">Visit Records</a></li>
-            <li><a href="a-feedback.php">Feedback</a></li>
-            <li><a href="a-reports.php">Reports</a></li>
-
-            <li><a href="a-logout.php">Logout</a></li>
-            <li><a href="#" onclick="openModal('searchModal')">Search</a></li>
-        </ul>
+        <header>
+            <h1 >Admin Dashboard</h1>
+        </header>
+    <nav class="nav-container"> 
+        <div class="logo">
+            <img src="img/ccs.png" alt="Logo" style="width: 100px; height: auto; margin-bottom: 20px;">
+        </div>      
+            <a href="a-dashboard.php">Home</a>
+            <a href="#" onclick="openModal('searchModal')">Search</a>
+            <a href="a-students.php">Students</a>
+            <a href="a-currents.php">Current Sit-in</a>
+            <a href="a-vrecords.php">Visit Records</a>
+            <a href="a-feedback.php">Feedback</a>
+            <a href="a-reports.php">Reports</a>
+            <a href="a-logout.php">Logout</a>
     </nav>
 
     <div class="container">
+
     <div class="top-section">
         <!-- Statistics Section -->
         <div class="box stats">
