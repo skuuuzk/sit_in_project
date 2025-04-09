@@ -45,7 +45,7 @@
         margin-top: 10px;
     }
 
-    .modal input, .modal select {
+    .modal input, .modal select, .modal textarea {
         width: 100%;
         padding: 10px;
         margin-top: 5px;
@@ -131,6 +131,21 @@
     </div>
 </div>
 
+<div id="feedbackModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('feedbackModal')">&times;</span>
+        <h2>Submit Feedback</h2>
+        <form id="feedbackForm">
+            <label for="feedbackText">Your Feedback:</label>
+            <textarea id="feedbackText" name="feedbackText" rows="4" required></textarea>
+            <div class="buttons">
+                <button type="button" class="save-btn" onclick="submitFeedback()">Submit</button>
+                <button type="button" class="cancel-btn" onclick="closeModal('feedbackModal')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     function openModal(id) {
         document.getElementById(id).style.display = 'block';
@@ -161,6 +176,32 @@
                 });
         } else {
             alert('Please enter an ID number!');
+        }
+    }
+
+    function submitFeedback() {
+        const feedbackText = document.getElementById('feedbackText').value;
+        if (feedbackText) {
+            fetch('submit_feedback.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ feedback: feedbackText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Feedback submitted');
+                    closeModal('feedbackModal');
+                } else {
+                    alert('Failed to submit feedback');
+                }
+            })
+            .catch(error => {
+                alert('An error occurred while submitting feedback.');
+                console.error(error);
+            });
+        } else {
+            alert('Please enter your feedback!');
         }
     }
 </script>

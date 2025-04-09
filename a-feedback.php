@@ -165,12 +165,12 @@ $feedback_records = mysqli_fetch_all($result, MYSQLI_ASSOC);
                             <td><?php echo htmlspecialchars($record['idno']); ?></td>
                             <td><?php echo htmlspecialchars($record['student_name']); ?></td>
                             <td><?php echo htmlspecialchars($record['time_in']); ?></td>
-                            <td><?php echo htmlspecialchars($record['feedback']); ?></td>
+                            <td><?php echo nl2br(htmlspecialchars($record['feedback'])); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="5" style="text-align: center;">No feedback records found.</td>
+                        <td colspan="4" style="text-align: center;">No feedback records found.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>

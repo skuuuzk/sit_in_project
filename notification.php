@@ -115,7 +115,7 @@ $stmt->close();
         }
 
         .notification-card {
-            background-color: whitesmoke;
+            margin: 40px;
             width: 600px;
             padding: 20px;
             text-align: center;

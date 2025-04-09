@@ -7,14 +7,30 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 
-// Fetch visit records
-$query = "SELECT r.idno, CONCAT(u.firstname, ' ', u.lastname) AS student_name, r.purpose, r.lab, r.time_in, r.time_out, r.date 
-          FROM reservations r 
-          JOIN users u ON r.idno = u.idno 
-          WHERE r.status = 'completed' 
-          ORDER BY r.date DESC";
-$result = mysqli_query($conn, $query);
-$visit_records = mysqli_fetch_all($result, MYSQLI_ASSOC);
+// Handle search query
+$search_id = $_GET['search_id'] ?? null;
+
+if ($search_id) {
+    $query = "SELECT r.idno, CONCAT(u.firstname, ' ', u.lastname) AS student_name, r.purpose, r.lab, r.time_in, r.time_out, r.date 
+              FROM reservations r 
+              JOIN users u ON r.idno = u.idno 
+              WHERE r.status = 'completed' AND r.idno = ? 
+              ORDER BY r.date DESC";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $search_id);
+} else {
+    $query = "SELECT r.idno, CONCAT(u.firstname, ' ', u.lastname) AS student_name, r.purpose, r.lab, r.time_in, r.time_out, r.date 
+              FROM reservations r 
+              JOIN users u ON r.idno = u.idno 
+              WHERE r.status = 'completed' 
+              ORDER BY r.date DESC";
+    $stmt = $conn->prepare($query);
+}
+
+$stmt->execute();
+$result = $stmt->get_result();
+$visit_records = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -173,16 +189,11 @@ $visit_records = mysqli_fetch_all($result, MYSQLI_ASSOC);
         </div>
 
         <div class="records-container">
-
             <!-- Search Bar -->
-            <form id="searchForm" class="search-container" style="display: flex; align-items: center; gap: 10px;">
-                <!-- Input Field with Styling -->
-                <input type="text" id="searchQuery" placeholder="Enter ID Number" required 
-                    style="padding: 10px 15px; border: none; border-radius: 5px; width: 70%;">
-
-                <!-- Search Button with Styling -->
-                <button type="button" class="save-btn" onclick="searchStudent()" 
-                        style="padding: 10px 15px; border: none; cursor: pointer; border-radius: 5px; background-color: #4CAF50; color: white;">
+            <form method="GET" action="a-vrecords.php" style="margin-bottom: 20px; text-align: center;">
+                <input type="text" name="search_id" placeholder="Enter ID Number" value="<?php echo htmlspecialchars($search_id ?? ''); ?>" 
+                       style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 70%;">
+                <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
                     Search
                 </button>
             </form>
@@ -218,33 +229,7 @@ $visit_records = mysqli_fetch_all($result, MYSQLI_ASSOC);
                     <?php endif; ?>
                 </tbody>
             </table>
-
         </div>
     </div>
-
-    <?php include 'common-modals.php'; ?>
-
-    <!-- Search Table Functionality -->
-    <script>
-        function searchTable() {
-            const input = document.getElementById("searchInput");
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById("visitRecordsTable");
-            const rows = table.getElementsByTagName("tr");
-
-            for (let i = 1; i < rows.length; i++) { // Start at 1 to skip the header row
-                let showRow = false;
-                const cells = rows[i].getElementsByTagName("td");
-                for (let j = 0; j < cells.length; j++) {
-                    const cell = cells[j];
-                    if (cell && cell.textContent.toLowerCase().includes(filter)) {
-                        showRow = true;
-                        break;
-                    }
-                }
-                rows[i].style.display = showRow ? "" : "none";
-            }
-        }
-    </script>
 </body>
 </html>

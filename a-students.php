@@ -8,7 +8,7 @@ if (!isset($_SESSION['admin_id'])) {
 }
 
 // Fetch student information
-$query = "SELECT idno, firstname, lastname, year, course, session FROM users";
+$query = "SELECT idno, firstname, lastname, year, course, session, username, email FROM users";
 $result = mysqli_query($conn, $query);
 $students = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
@@ -27,15 +27,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reset_sessions'])) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_student'])) {
     $idno = $_POST['idno'];
     $firstname = $_POST['firstname'];
-    $middlename = $_POST['middlename'];
+    $midname = $_POST['midname'];
     $lastname = $_POST['lastname'];
     $year = $_POST['year'];
     $course = $_POST['course'];
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $email = $_POST['email'];
     $session = 30; // Default session count
 
     // Correct SQL and correct order of values
-    $stmt = $conn->prepare("INSERT INTO users (idno, firstname, lastname, year, course, session) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssi", $idno, $firstname, $lastname, $year, $course, $session);
+    $stmt = $conn->prepare("INSERT INTO users (idno, firstname, midname, lastname, year, course, username, password, email, session) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssssssi", $idno, $firstname, $midname, $lastname, $year, $course, $username, $password, $email, $session);
     $stmt->execute();
     $stmt->close();
 
@@ -43,12 +46,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_student'])) {
     exit();
 }
 
-
 // Handle delete student action
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_student'])) {
     $idno = $_POST['idno'];
     $stmt = $conn->prepare("DELETE FROM users WHERE idno = ?");
     $stmt->bind_param("i", $idno);
+    $stmt->execute();
+    $stmt->close();
+
+    // Refresh the page to show the updated student list
+    header("Location: a-students.php");
+    exit();
+}
+
+// Handle edit student action
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_student'])) {
+    $idno = $_POST['idno'];
+    $firstname = $_POST['firstname'];
+    $midname = $_POST['midname'];
+    $lastname = $_POST['lastname'];
+    $year = $_POST['year'];
+    $course = $_POST['course'];
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    if (!empty($password)) {
+        $stmt = $conn->prepare("UPDATE users SET firstname = ?, midname = ?, lastname = ?, year = ?, course = ?, username = ?, email = ?, password = ? WHERE idno = ?");
+        $stmt->bind_param("ssssssssi", $firstname, $midname, $lastname, $year, $course, $username, $email, $password, $idno);
+    } else {
+        $stmt = $conn->prepare("UPDATE users SET firstname = ?, midname = ?, lastname = ?, year = ?, course = ?, username = ?, email = ? WHERE idno = ?");
+        $stmt->bind_param("sssssssi", $firstname, $midname, $lastname, $year, $course, $username, $email, $idno);
+    }
     $stmt->execute();
     $stmt->close();
 
@@ -335,7 +364,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_student'])) {
                     <td><?php echo htmlspecialchars($student['course']); ?></td>
                     <td><?php echo htmlspecialchars($student['session']); ?></td>
                     <td class="action-buttons">
-                        <button onclick="window.location.href='edit_student.php?id=<?php echo $student['idno']; ?>'">Edit</button>
+                        <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($student)); ?>)">Edit</button>
                         <form action="a-students.php" method="post" style="display:inline;">
                             <input type="hidden" name="idno" value="<?php echo htmlspecialchars($student['idno']); ?>">
                             <button type="submit" name="delete_student">Delete</button>
@@ -359,6 +388,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_student'])) {
 
                 <label for="firstname">First Name:</label>
                 <input type="text" id="firstname" name="firstname" required>
+
+                <label for="midname">Middle Name:</label>
+                <input type="text" id="midname" name="midname" required>
 
                 <label for="lastname">Last Name:</label>
                 <input type="text" id="lastname" name="lastname" required>
@@ -391,13 +423,80 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_student'])) {
                     <option value="BSPSY">Bachelor of Science in Psychology</option>
                 </select>
 
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+
                 <button type="submit" name="add_student">Add Student</button>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Your existing JS -->
+<!-- Edit Student Modal -->
+<div id="editStudentModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('editStudentModal')">&times;</span>
+        <h2>Edit Student</h2>
+        <form action="a-students.php" method="post">
+            <input type="hidden" id="edit-idno" name="idno">
+
+            <label for="edit-firstname">First Name:</label>
+            <input type="text" id="edit-firstname" name="firstname" required>
+
+            <label for="edit-midname">Middle Name:</label>
+            <input type="text" id="edit-midname" name="midname" required>
+
+            <label for="edit-lastname">Last Name:</label>
+            <input type="text" id="edit-lastname" name="lastname" required>
+
+            <label for="edit-year">Year:</label>
+            <select id="edit-year" name="year" required>
+                <option value="">Select Year</option>
+                <option value="1">1st</option>
+                <option value="2">2nd</option>
+                <option value="3">3rd</option>
+                <option value="4">4th</option>
+            </select>
+
+            <label for="edit-course">Course:</label>
+            <select id="edit-course" name="course" required>
+                <option value="">Select Course</option>
+                <option value="BSIT">Bachelor of Science in Information Technology</option>
+                <option value="BSCS">Bachelor of Science in Computer Science</option>
+                <option value="BSECE">Bachelor of Science in Electronics Engineering</option>
+                <option value="BSCE">Bachelor of Science in Civil Engineering</option>
+                <option value="BSME">Bachelor of Science in Mechanical Engineering</option>
+                <option value="BSEE">Bachelor of Science in Electrical Engineering</option>
+                <option value="BSBA">Bachelor of Science in Business Administration</option>
+                <option value="BSA">Bachelor of Science in Accountancy</option>
+                <option value="BSHM">Bachelor of Science in Hospitality Management</option>
+                <option value="BSTM">Bachelor of Science in Tourism Management</option>
+                <option value="BSN">Bachelor of Science in Nursing</option>
+                <option value="BSED">Bachelor of Secondary Education</option>
+                <option value="BEED">Bachelor of Elementary Education</option>
+                <option value="BSPSY">Bachelor of Science in Psychology</option>
+            </select>
+
+            <label for="edit-username">Username:</label>
+            <input type="text" id="edit-username" name="username" required>
+
+            <label for="edit-email">Email:</label>
+            <input type="email" id="edit-email" name="email" required>
+
+            <label for="edit-password">Password (leave blank to keep current):</label>
+            <input type="password" id="edit-password" name="password">
+
+            <button type="submit" name="edit_student">Save Changes</button>
+        </form>
+    </div>
+</div>
+
 <script>
     function openModal(id) {
         document.getElementById(id).style.display = 'block';
@@ -406,11 +505,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_student'])) {
         document.getElementById(id).style.display = 'none';
     }
 
+    function openEditModal(student) {
+        document.getElementById('edit-idno').value = student.idno;
+        document.getElementById('edit-firstname').value = student.firstname;
+        document.getElementById('edit-midname').value = student.midname || '';
+        document.getElementById('edit-lastname').value = student.lastname;
+        document.getElementById('edit-year').value = student.year;
+        document.getElementById('edit-course').value = student.course;
+        document.getElementById('edit-username').value = student.username || '';
+        document.getElementById('edit-email').value = student.email || '';
+        document.getElementById('edit-password').value = ''; // Leave blank for security
+        document.getElementById('editStudentModal').style.display = 'block';
+    }
+
     // Optional: close modal when clicking outside
     window.onclick = function(event) {
-        const modal = document.getElementById("addStudentModal");
+        const modal = document.getElementById("editStudentModal");
         if (event.target === modal) {
-            closeModal("addStudentModal");
+            closeModal("editStudentModal");
         }
     }
 </script>

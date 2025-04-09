@@ -155,6 +155,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-radius: 50%;
             border: 2px solid #475E53; /* Border around the image */
         }
+
+        .pic{
+            margin: 10px auto; 
+            text-align: center; 
+        }
+        .pic img { 
+            width: 125px;
+            height: 125px; /* Set height to make it circular */
+            object-fit: cover; /* Ensure the image covers the area */
+            border-radius: 50%;
+            border: 2px solid #475E53; /* Border around the image */
+        }
+
+        .logo img { 
+            width: 90px;
+            height: 90px; /* Set height to make it circular */
+            object-fit: cover; /* Ensure the image covers the area */
+            border-radius: 50%;
+            border: 2px solid #475E53; /* Border around the image */
+        }
         .container { 
             margin:auto; 
             display: flex; 
@@ -166,16 +186,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .edit-profile-card { 
             width: 500px;
             height: auto; 
+            margin: 40px auto;
             padding: 35px; 
             display: flex;
             flex-direction: column;
             text-align: justify; 
+            justify-content: stretch;
             border-radius: 10px; 
             background: rgba(255, 255, 255, 0.1); /* Transparent background */
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
             backdrop-filter: blur(10px); /* Frosted glass effect */
             border: 3px solid #929292;
-            overflow: clip; 
+            overflow: hidden; 
         }
         .title { 
             text-align: center;
@@ -203,6 +225,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         select, input[type="text"], input[type="email"] {
             width: 100%;
             padding: 5px;
+            border: #475E53 2px solid;
+            border-radius: 10px;
+            background-color:rgb(216, 240, 213); /* Light background for input fields */
+            transition: border-color 0.3s ease;
+
         }
 
         label { 
@@ -265,10 +292,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <!-- Profile Picture -->
             <div class="form-group">
-
                 <!-- Display current profile picture -->
-                <div class="profile-pic">
-                    <img id="profileImage" src="<?php echo htmlspecialchars($user['profile_pic']); ?>" alt="Profile Picture">
+                <div class="pic">
+                    <img id="profileImage" src="<?php echo htmlspecialchars($_SESSION['profile_pic'] ?? $profile_pic); ?>" alt="Profile Picture" style="cursor: pointer;">
                     <input type="file" name="profile_pic" id="profileInput" style="display: none;" onchange="previewImage(event)">
                 </div>
             </div>
@@ -347,7 +373,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
     <script>
-    // Change the image when the user clicks the profile picture
+        // Trigger file input when the profile picture is clicked
         document.getElementById('profileImage').onclick = function() {
             document.getElementById('profileInput').click();
         };

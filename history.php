@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
         $stmt->close();
 
         // Refresh the page to show the updated feedback
-        header("Location: history.php");
+        header("Location: history.php?feedback_status=success");
         exit();
     }
 }
@@ -192,6 +192,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
     <div class="container">
         <div class="form-container">
             <h2>History</h2>
+            <?php if (isset($_GET['feedback_status']) && $_GET['feedback_status'] === 'success'): ?>
+                <p style="color: green; text-align: center;">Feedback submitted successfully!</p>
+            <?php endif; ?>
             <table>
                 <thead>
                     <tr>
@@ -200,6 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
                         <th>Login</th>
                         <th>Logout</th>
                         <th>Feedback</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -210,26 +214,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
                             <td><?php echo htmlspecialchars($row['time_in']); ?></td>
                             <td><?php echo htmlspecialchars($row['time_out'] ?? 'N/A'); ?></td>
                             <td>
-                                <?php if (empty($row['feedback'])): ?>
-                                    <form class="feedback-form" action="history.php" method="post">
-                                        <textarea name="feedback" rows="2" placeholder="Provide your feedback..." required></textarea>
-                                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
-                                    </form>
-                                    <td class="action-buttons">
-                                        <button onclick="window.location.href='a-feedback.php?id=<?php echo $student['idno']; ?>'">submit</button>
-                                        <form action="a-students.php" method="post" style="display:inline;">
-                                            <input type="hidden" name="idno" value="<?php echo htmlspecialchars($student['idno']); ?>">
-                                        </form>
-                                    </td>
-                                <?php else: ?>
-                                    <?php echo htmlspecialchars($row['feedback']); ?>
-                                <?php endif; ?>
+                                <form method="POST" action="submit_feedback.php" class="feedback-form">
+                                    <textarea name="feedback" rows="2" placeholder="Leave your feedback here..."></textarea>
+                                    <input type="hidden" name="reservation_id" value="<?php echo $row['id']; ?>">
+                            </td>
+                            <td>
+                                    <div class="action-buttons">
+                                        <button type="submit">Submit Feedback</button>
+                                    </div>
+                                </form>
                             </td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
             </table>
+            
         </div>
     </div>
+   
 </body>
 </html>
