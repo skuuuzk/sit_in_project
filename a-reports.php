@@ -1,6 +1,10 @@
 <?php
 require_once('config/db.php');
-require_once('vendor/autoload.php'); // For libraries like PhpSpreadsheet or Dompdf
+require_once(__DIR__ . '/vendor/autoload.php'); // Ensure the correct path to autoload.php
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Dompdf\Dompdf;
 
 // Ensure admin is logged in
 if (!isset($_SESSION['admin_id'])) {
@@ -18,11 +22,16 @@ $query = "SELECT r.idno, CONCAT(u.firstname, ' ', u.lastname) AS student_name, r
           JOIN users u ON r.idno = u.idno 
           WHERE r.status = 'completed'";
 
+$conditions = [];
 if (!empty($filter_lab)) {
-    $query .= " AND r.lab = '" . mysqli_real_escape_string($conn, $filter_lab) . "'";
+    $conditions[] = "r.lab = '" . mysqli_real_escape_string($conn, $filter_lab) . "'";
 }
 if (!empty($filter_purpose)) {
-    $query .= " AND r.purpose = '" . mysqli_real_escape_string($conn, $filter_purpose) . "'";
+    $conditions[] = "r.purpose = '" . mysqli_real_escape_string($conn, $filter_purpose) . "'";
+}
+
+if (!empty($conditions)) {
+    $query .= " AND " . implode(" AND ", $conditions);
 }
 
 $query .= " ORDER BY r.time_in DESC";
@@ -31,7 +40,7 @@ $records = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 // Handle export to Excel
 if (isset($_POST['export_excel'])) {
-    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $spreadsheet = new Spreadsheet(); // Ensure PhpSpreadsheet is properly loaded
     $sheet = $spreadsheet->getActiveSheet();
     $sheet->setTitle('Sit-in Records');
 
@@ -56,7 +65,7 @@ if (isset($_POST['export_excel'])) {
     }
 
     // Output to Excel file
-    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $writer = new Xlsx($spreadsheet); // Ensure the writer class is properly loaded
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     header('Content-Disposition: attachment;filename="sit_in_records.xlsx"');
     $writer->save('php://output');
@@ -79,7 +88,7 @@ if (isset($_POST['export_pdf'])) {
     }
     $html .= '</tbody></table>';
 
-    $dompdf = new \Dompdf\Dompdf();
+    $dompdf = new Dompdf(); // Ensure Dompdf is properly loaded
     $dompdf->loadHtml($html);
     $dompdf->setPaper('A4', 'landscape');
     $dompdf->render();
@@ -221,6 +230,41 @@ if (isset($_POST['export_pdf'])) {
             background-color: #3a4256;
         }
     </style>
+    <script>
+        function printTable() {
+            const printWindow = window.open('', '_blank');
+            const content = document.querySelector('.top-section').innerHTML; // Select the table and filters
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Print Records</title>
+                    <style>
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 20px;
+                        }
+                        th, td {
+                            border: 1px solid #333;
+                            padding: 10px;
+                            text-align: left;
+                        }
+                        th {
+                            background-color: whitesmoke;
+                            color: #333;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>Filtered Sit-in Records</h1>
+                    ${content}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+    </script>
 </head>
 <body>
 <nav class="nav-container"> 
@@ -265,17 +309,19 @@ if (isset($_POST['export_pdf'])) {
             </select>
             <button type="submit">Filter</button>
         </form>
-        <form method="post">
-            <button type="submit" name="export_excel" style="background-color: #28a745; color: white; padding: 8px 12px; border: none; cursor: pointer; margin-right: 5px;">
-                📄 Export to Excel
+
+        <form method="post" style="margin-bottom: 20px;">
+            <button type="submit" name="export_excel" style="background-color: seagreen; padding: 10px 20px; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                <i class="fas fa-file-excel"></i> Export to Excel
             </button>
-            <button type="submit" name="export_pdf" style="background-color: #007bff; color: white; padding: 8px 12px; border: none; cursor: pointer; margin-right: 5px;">
-                🧾 Export to PDF
+            <button type="submit" name="export_pdf" style="background-color: red; padding: 10px 20px; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                <i class="fas fa-file-pdf"></i> Export to PDF
             </button>
-            <button type="button" onclick="window.print()" style="background-color: #ffc107; color: black; padding: 8px 12px; border: none; cursor: pointer;">
-                🖨️ Print Records
+            <button type="button" onclick="printTable()" style="background-color: yellow; padding: 10px 20px; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                <i class="fas fa-print"></i> Print Records
             </button>
         </form>
+
 
         <table>
             <thead>
