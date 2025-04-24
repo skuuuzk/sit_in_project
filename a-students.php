@@ -32,17 +32,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_student'])) {
     $year = $_POST['year'];
     $course = $_POST['course'];
     $username = $_POST['username'];
-    $password = $_POST['password'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password
     $email = $_POST['email'];
     $session = 30; // Default session count
 
-    // Correct SQL and correct order of values
     $stmt = $conn->prepare("INSERT INTO users (idno, firstname, midname, lastname, year, course, username, password, email, session) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("sssssssssi", $idno, $firstname, $midname, $lastname, $year, $course, $username, $password, $email, $session);
     $stmt->execute();
     $stmt->close();
 
-    header("Location: a-students.php");
+    // Redirect with success message
+    header("Location: a-students.php?success=1");
     exit();
 }
 
@@ -72,8 +72,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_student'])) {
     $password = $_POST['password'];
 
     if (!empty($password)) {
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT); // Hash the new password
         $stmt = $conn->prepare("UPDATE users SET firstname = ?, midname = ?, lastname = ?, year = ?, course = ?, username = ?, email = ?, password = ? WHERE idno = ?");
-        $stmt->bind_param("ssssssssi", $firstname, $midname, $lastname, $year, $course, $username, $email, $password, $idno);
+        $stmt->bind_param("ssssssssi", $firstname, $midname, $lastname, $year, $course, $username, $email, $hashed_password, $idno);
     } else {
         $stmt = $conn->prepare("UPDATE users SET firstname = ?, midname = ?, lastname = ?, year = ?, course = ?, username = ?, email = ? WHERE idno = ?");
         $stmt->bind_param("sssssssi", $firstname, $midname, $lastname, $year, $course, $username, $email, $idno);
@@ -91,312 +92,153 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_student'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student List</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background-image: url(img/5.jpg); /* Background image */
-            background-size: cover; /* Cover the entire viewport */
-            display: flex;
-        }
-
-        .nav-container {
-            width: 240px;
-            background: rgba(255, 255, 255, 0.1); /* Transparent background */
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
-            backdrop-filter: blur(1px); /* Frosted glass effect */
-            background-color:rgba(119, 152, 95, 0.54);
-            color:rgb(11, 27, 3);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 10px 20px;
-            border-radius: 0 20px 20px 0;
-            justify-content: stretch;
-        }
-
-        .nav-container a {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color:rgb(1, 23, 13);
-            font-size: 16px;
-            margin: 23.5px 0;
-            padding: 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .nav-container a i {
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
-        .nav-container a:hover {
-            background-color:#DEE9DC;
-            color: seagreen;       
-        }
-
-        .nav-container a.active {
-            font-weight: bold;
-            background-color: #BACEAB;
-        }
-
-        .logo {
-            margin: 25px auto;
-            text-align: center;
-        }
-
-        .logo img {
-            width: 70px;
-            height: 70px; /* Set height to make it circular */
-            object-fit: cover; /* Ensure the image covers the area */
-            border-radius: 50%;
-            border: 2px solid #475E53; /* Border around the image */
-        }
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #4d5572; /* Background color */
-            color: white; /* Text color */
-            padding: 10px 0;
-            text-align: center;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add shadow for better visibility */
-        }
-
-        .container {
-            flex-direction: column;
-            gap: 20px;
-            padding: 50px;
-            justify-content: center;
-            position: relative;
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        .actions {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .actions button {
-            padding: 10px 20px;
-            background-color: #4d5572;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .actions button:hover {
-            background-color: #3a4256;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            border: 1px solid #333;
-            padding: 10px;
-            text-align: left;
-        }
-
-        th {
-            background-color: whitesmoke;
-            color: #333;
-        }
-
-        .action-buttons button {
-            padding: 5px 10px;
-            background-color: #4d5572;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-right: 5px;
-        }
-
-        .action-buttons button:hover {
-            background-color: #3a4256;
-        }
-
-        .modal {
-        display: none; 
-        position: fixed; 
-        z-index: 999; 
-        left: 0;
-        top: 0;
-        width: 100%; 
-        height: 100%; 
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.5); 
-    }
-
-    .modal-content {
-        background-color: #fff;
-        margin: 5% auto;
-        padding: 30px;
-        border: 1px solid #ccc;
-        width: 450px;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-
-    .modal-content h2 {
-        margin-top: 0;
-        font-size: 24px;
-        text-align: center;
-    }
-
-    .modal-content label {
-        display: block;
-        margin-top: 12px;
-        font-weight: bold;
-    }
-
-    .modal-content input,
-    .modal-content select {
-        width: 100%;
-        padding: 8px;
-        margin-top: 5px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-    }
-
-    .modal-content button[type="submit"] {
-        width: 100%;
-        padding: 10px;
-        background-color: #007bff;
-        border: none;
-        color: white;
-        font-size: 16px;
-        border-radius: 5px;
-        margin-top: 20px;
-        cursor: pointer;
-    }
-
-    .modal-content button[type="submit"]:hover {
-        background-color: #0056b3;
-    }
-
-    .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .close:hover {
-        color: #000;
-    }
-    </style>
+    <title>Students</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<nav class="nav-container"> 
-        <div class="logo">
-            <img src="img/ccs.png" alt="Logo" style="width: 100px; height: auto; margin-bottom: 20px;">
-        </div>      
-            <a href="a-dashboard.php"><i class="fas fa-user"></i><span>Home</span></a>
-            <a href="#" onclick="openModal('searchModal')"><i class="fas fa-search"></i> <span>Search</span></a>
-            <a href="a-students.php"class="active"><i class="fas fa-users"></i> <span>Students</span></a>
-            <a href="a-currents.php"><i class="fas fa-user-clock"></i> <span>Current Sit-in</span></a>
-            <a href="a-vrecords.php"><i class="fas fa-book"></i> <span>Visit Records</span></a>
-            <a href="a-feedback.php"><i class="fas fa-comments"></i> <span>Feedback</span></a>
-            <a href="a-reports.php"><i class="fas fa-chart-line"></i> <span>Reports</span></a>
-            <a href="a-logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+<body class="bg-cover bg-center h-screen flex" style="background-image: url('img/5.jpg');">
+    <nav class="w-60 bg-green-700 bg-opacity-60 text-green-900 p-5 rounded-r-2xl shadow-lg">
+        <div class="logo text-center mb-6">
+            <img src="img/ccs.png" alt="Logo" class="w-24 h-24 rounded-full border-2 border-green-800 mx-auto">
+        </div>
+        <a href="a-dashboard.php" class="flex items-center text-lg mb-4 p-2 rounded hover:bg-green-200"><i class="fas fa-user mr-2"></i>Home</a>
+        <a href="#" onclick="openModal('searchModal')" class="flex items-center text-lg mb-4 p-2 rounded hover:bg-green-200"><i class="fas fa-search mr-2"></i>Search</a>
+        <a href="a-students.php" class="flex items-center text-lg mb-4 p-2 rounded bg-green-200 font-bold"><i class="fas fa-users mr-2"></i>Students</a>
+        <a href="a-currents.php" class="flex items-center text-lg mb-4 p-2 rounded hover:bg-green-200"><i class="fas fa-user-clock mr-2"></i>Current Sit-in</a>
+        <a href="a-vrecords.php" class="flex items-center text-lg mb-4 p-2 rounded hover:bg-green-200"><i class="fas fa-book mr-2"></i>Visit Records</a>
+        <a href="a-feedback.php" class="flex items-center text-lg mb-4 p-2 rounded hover:bg-green-200"><i class="fas fa-comments mr-2"></i>Feedback</a>
+        <a href="a-reports.php" class="flex items-center text-lg mb-4 p-2 rounded hover:bg-green-200"><i class="fas fa-chart-line mr-2"></i>Reports</a>
+        <a href="a-logout.php" class="flex items-center text-lg mb-4 p-2 rounded hover:bg-green-200"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
     </nav>
 
-    <div class="container">
-        <div class="header-container">
-            <header>
-                <h1 >STUDENT LIST</h1>
-            </header>
+    <div class="flex-1 p-6 space-y-6">
+        <div class="text-center text-2xl font-bold text-green-900">Students</div>
+        <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg">
+            <h3 class="text-xl font-bold text-green-900 mb-4">Student Records</h3>
+            <div class="flex justify-between mb-4">
+                <button onclick="openModal('addStudentModal')" class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">Add Students</button>
+                <form action="a-students.php" method="post">
+                    <button type="submit" name="reset_sessions" class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">Reset All Sessions</button>
+                </form>
+            </div>
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-green-700 text-white">
+                        <th class="border p-2">ID Number</th>
+                        <th class="border p-2">Name</th>
+                        <th class="border p-2">Year</th>
+                        <th class="border p-2">Course</th>
+                        <th class="border p-2">Remaining Sessions</th>
+                        <th class="border p-2">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($students as $student): ?>
+                        <tr class="bg-white bg-opacity-50">
+                            <td class="border p-2"><?php echo htmlspecialchars($student['idno']); ?></td>
+                            <td class="border p-2"><?php echo htmlspecialchars($student['firstname'] . ' '  . $student['lastname']); ?></td>
+                            <td class="border p-2"><?php echo htmlspecialchars($student['year']); ?></td>
+                            <td class="border p-2"><?php echo htmlspecialchars($student['course']); ?></td>
+                            <td class="border p-2"><?php echo htmlspecialchars($student['session']); ?></td>
+                            <td class="border p-2 flex space-x-2">
+                                <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($student)); ?>)" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Edit</button>
+                                <form action="a-students.php" method="post">
+                                    <input type="hidden" name="idno" value="<?php echo htmlspecialchars($student['idno']); ?>">
+                                    <button type="submit" name="delete_student" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
-        <div class="student-container" style="border: 2px solid #ccc; padding: 20px; border-radius: 10px; box-shadow: 2px 2px 8px rgba(0,0,0,0.1); background-color: #f9f9f9; margin: 20px;">
-    <div class="actions">
-        <button onclick="openModal('addStudentModal')">Add Students</button>
-        <form action="a-students.php" method="post" style="display:inline;">
-            <button type="submit" name="reset_sessions">Reset All Sessions</button>
-        </form>
     </div>
-    <table>
-        <thead>
-            <tr>
-                <th>ID Number</th>
-                <th>Name</th>
-                <th>Year</th>
-                <th>Course</th>
-                <th>Remaining Sessions</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($students as $student): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($student['idno']); ?></td>
-                    <td><?php echo htmlspecialchars($student['firstname'] . ' '  . $student['lastname']); ?></td>
-                    <td><?php echo htmlspecialchars($student['year']); ?></td>
-                    <td><?php echo htmlspecialchars($student['course']); ?></td>
-                    <td><?php echo htmlspecialchars($student['session']); ?></td>
-                    <td class="action-buttons">
-                        <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($student)); ?>)">Edit</button>
-                        <form action="a-students.php" method="post" style="display:inline;">
-                            <input type="hidden" name="idno" value="<?php echo htmlspecialchars($student['idno']); ?>">
-                            <button type="submit" name="delete_student">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
 
- <!-- Your Add Student Modal -->
-<div class="addstudent-container">
-    <div id="addStudentModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('addStudentModal')">&times;</span>
-            <h2>Add Student</h2>
+    <div id="addStudentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center overflow-auto hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+            <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl" onclick="closeModal('addStudentModal')">&times;</button>
+            <h2 class="text-xl font-bold mb-4 text-green-900">Add Student</h2>
+            <form action="a-students.php" method="post" class="space-y-4">
+                <div>
+                    <label for="idno" class="block font-bold text-green-900">ID Number:</label>
+                    <input type="text" id="idno" name="idno" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                </div>
+                <div>
+                    <label for="firstname" class="block font-bold text-green-900">First Name:</label>
+                    <input type="text" id="firstname" name="firstname" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                </div>
+                <div>
+                    <label for="midname" class="block font-bold text-green-900">Middle Name:</label>
+                    <input type="text" id="midname" name="midname" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                <div>
+                    <label for="lastname" class="block font-bold text-green-900">Last Name:</label>
+                    <input type="text" id="lastname" name="lastname" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                </div>
+                <div>
+                    <label for="year" class="block font-bold text-green-900">Year:</label>
+                    <select id="year" name="year" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                        <option value="">Select Year</option>
+                        <option value="1">1st</option>
+                        <option value="2">2nd</option>
+                        <option value="3">3rd</option>
+                        <option value="4">4th</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="course" class="block font-bold text-green-900">Course:</label>
+                    <select id="course" name="course" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                        <option value="">Select Course</option>
+                        <option value="BSIT">Bachelor of Science in Information Technology</option>
+                        <option value="BSCS">Bachelor of Science in Computer Science</option>
+                        <option value="BSECE">Bachelor of Science in Electronics Engineering</option>
+                        <option value="BSCE">Bachelor of Science in Civil Engineering</option>
+                        <option value="BSME">Bachelor of Science in Mechanical Engineering</option>
+                        <option value="BSEE">Bachelor of Science in Electrical Engineering</option>
+                        <option value="BSBA">Bachelor of Science in Business Administration</option>
+                        <option value="BSA">Bachelor of Science in Accountancy</option>
+                        <option value="BSHM">Bachelor of Science in Hospitality Management</option>
+                        <option value="BSTM">Bachelor of Science in Tourism Management</option>
+                        <option value="BSN">Bachelor of Science in Nursing</option>
+                        <option value="BSED">Bachelor of Secondary Education</option>
+                        <option value="BEED">Bachelor of Elementary Education</option>
+                        <option value="BSPSY">Bachelor of Science in Psychology</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="username" class="block font-bold text-green-900">Username:</label>
+                    <input type="text" id="username" name="username" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                </div>
+                <div>
+                    <label for="password" class="block font-bold text-green-900">Password:</label>
+                    <input type="password" id="password" name="password" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                </div>
+                <div>
+                    <label for="email" class="block font-bold text-green-900">Email:</label>
+                    <input type="email" id="email" name="email" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                </div>
+                <button type="submit" name="add_student" class="w-full bg-green-700 text-white p-2 rounded hover:bg-green-800">Add Student</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="editStudentModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="modal-content bg-white p-6 rounded-lg shadow-lg w-96">
+            <span class="close text-gray-500 text-2xl cursor-pointer" onclick="closeModal('editStudentModal')">&times;</span>
+            <h2 class="text-xl font-bold mb-4">Edit Student</h2>
             <form action="a-students.php" method="post">
-                <label for="idno">ID Number:</label>
-                <input type="text" id="idno" name="idno" required>
+                <input type="hidden" id="edit-idno" name="idno">
 
-                <label for="firstname">First Name:</label>
-                <input type="text" id="firstname" name="firstname" required>
+                <label for="edit-firstname" class="block font-bold mb-2">First Name:</label>
+                <input type="text" id="edit-firstname" name="firstname" class="w-full p-2 border rounded mb-4" required>
 
-                <label for="midname">Middle Name:</label>
-                <input type="text" id="midname" name="midname" required>
+                <label for="edit-midname" class="block font-bold mb-2">Middle Name:</label>
+                <input type="text" id="edit-midname" name="midname" class="w-full p-2 border rounded mb-4" required>
 
-                <label for="lastname">Last Name:</label>
-                <input type="text" id="lastname" name="lastname" required>
+                <label for="edit-lastname" class="block font-bold mb-2">Last Name:</label>
+                <input type="text" id="edit-lastname" name="lastname" class="w-full p-2 border rounded mb-4" required>
 
-                <label for="year">Year:</label>
-                <select id="year" name="year" required>
+                <label for="edit-year" class="block font-bold mb-2">Year:</label>
+                <select id="edit-year" name="year" class="w-full p-2 border rounded mb-4" required>
                     <option value="">Select Year</option>
                     <option value="1">1st</option>
                     <option value="2">2nd</option>
@@ -404,8 +246,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_student'])) {
                     <option value="4">4th</option>
                 </select>
 
-                <label for="course">Course:</label>
-                <select id="course" name="course" required>
+                <label for="edit-course" class="block font-bold mb-2">Course:</label>
+                <select id="edit-course" name="course" class="w-full p-2 border rounded mb-4" required>
                     <option value="">Select Course</option>
                     <option value="BSIT">Bachelor of Science in Information Technology</option>
                     <option value="BSCS">Bachelor of Science in Computer Science</option>
@@ -423,108 +265,50 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_student'])) {
                     <option value="BSPSY">Bachelor of Science in Psychology</option>
                 </select>
 
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <label for="edit-username" class="block font-bold mb-2">Username:</label>
+                <input type="text" id="edit-username" name="username" class="w-full p-2 border rounded mb-4" required>
 
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <label for="edit-email" class="block font-bold mb-2">Email:</label>
+                <input type="email" id="edit-email" name="email" class="w-full p-2 border rounded mb-4" required>
 
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <label for="edit-password" class="block font-bold mb-2">Password (leave blank to keep current):</label>
+                <input type="password" id="edit-password" name="password" class="w-full p-2 border rounded mb-4">
 
-                <button type="submit" name="add_student">Add Student</button>
+                <button type="submit" name="edit_student" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Save Changes</button>
             </form>
         </div>
     </div>
-</div>
 
-<!-- Edit Student Modal -->
-<div id="editStudentModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('editStudentModal')">&times;</span>
-        <h2>Edit Student</h2>
-        <form action="a-students.php" method="post">
-            <input type="hidden" id="edit-idno" name="idno">
-
-            <label for="edit-firstname">First Name:</label>
-            <input type="text" id="edit-firstname" name="firstname" required>
-
-            <label for="edit-midname">Middle Name:</label>
-            <input type="text" id="edit-midname" name="midname" required>
-
-            <label for="edit-lastname">Last Name:</label>
-            <input type="text" id="edit-lastname" name="lastname" required>
-
-            <label for="edit-year">Year:</label>
-            <select id="edit-year" name="year" required>
-                <option value="">Select Year</option>
-                <option value="1">1st</option>
-                <option value="2">2nd</option>
-                <option value="3">3rd</option>
-                <option value="4">4th</option>
-            </select>
-
-            <label for="edit-course">Course:</label>
-            <select id="edit-course" name="course" required>
-                <option value="">Select Course</option>
-                <option value="BSIT">Bachelor of Science in Information Technology</option>
-                <option value="BSCS">Bachelor of Science in Computer Science</option>
-                <option value="BSECE">Bachelor of Science in Electronics Engineering</option>
-                <option value="BSCE">Bachelor of Science in Civil Engineering</option>
-                <option value="BSME">Bachelor of Science in Mechanical Engineering</option>
-                <option value="BSEE">Bachelor of Science in Electrical Engineering</option>
-                <option value="BSBA">Bachelor of Science in Business Administration</option>
-                <option value="BSA">Bachelor of Science in Accountancy</option>
-                <option value="BSHM">Bachelor of Science in Hospitality Management</option>
-                <option value="BSTM">Bachelor of Science in Tourism Management</option>
-                <option value="BSN">Bachelor of Science in Nursing</option>
-                <option value="BSED">Bachelor of Secondary Education</option>
-                <option value="BEED">Bachelor of Elementary Education</option>
-                <option value="BSPSY">Bachelor of Science in Psychology</option>
-            </select>
-
-            <label for="edit-username">Username:</label>
-            <input type="text" id="edit-username" name="username" required>
-
-            <label for="edit-email">Email:</label>
-            <input type="email" id="edit-email" name="email" required>
-
-            <label for="edit-password">Password (leave blank to keep current):</label>
-            <input type="password" id="edit-password" name="password">
-
-            <button type="submit" name="edit_student">Save Changes</button>
-        </form>
-    </div>
-</div>
-
-<script>
-    function openModal(id) {
-        document.getElementById(id).style.display = 'block';
-    }
-    function closeModal(id) {
-        document.getElementById(id).style.display = 'none';
-    }
-
-    function openEditModal(student) {
-        document.getElementById('edit-idno').value = student.idno;
-        document.getElementById('edit-firstname').value = student.firstname;
-        document.getElementById('edit-midname').value = student.midname || '';
-        document.getElementById('edit-lastname').value = student.lastname;
-        document.getElementById('edit-year').value = student.year;
-        document.getElementById('edit-course').value = student.course;
-        document.getElementById('edit-username').value = student.username || '';
-        document.getElementById('edit-email').value = student.email || '';
-        document.getElementById('edit-password').value = ''; // Leave blank for security
-        document.getElementById('editStudentModal').style.display = 'block';
-    }
-
-    // Optional: close modal when clicking outside
-    window.onclick = function(event) {
-        const modal = document.getElementById("editStudentModal");
-        if (event.target === modal) {
-            closeModal("editStudentModal");
+    <script>
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
         }
-    }
-</script>
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function openEditModal(student) {
+            document.getElementById('edit-idno').value = student.idno;
+            document.getElementById('edit-firstname').value = student.firstname;
+            document.getElementById('edit-midname').value = student.midname || '';
+            document.getElementById('edit-lastname').value = student.lastname;
+            document.getElementById('edit-year').value = student.year;
+            document.getElementById('edit-course').value = student.course;
+            document.getElementById('edit-username').value = student.username || '';
+            document.getElementById('edit-email').value = student.email || '';
+            document.getElementById('edit-password').value = ''; // Leave blank for security
+            document.getElementById('editStudentModal').classList.remove('hidden');
+        }
+
+        // Optional: close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById("editStudentModal");
+            if (event.target === modal) {
+                closeModal("editStudentModal");
+            }
+        }
+    </script>
+    <?php include 'common-modals.php'; ?>
+    <div id="successPopup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white p-4 rounded-lg shadow-lg hidden">Student added successfully!</div>
 </body>
 </html>

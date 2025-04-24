@@ -25,100 +25,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['search_query'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Search</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #92929288;
-        }
-        .navbar {
-            background: #7F60A8;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-        }
-
-        .navbar ul {
-            list-style: none;
-            display: flex;
-            gap: 15px;
-        }
-
-        .navbar ul li a {
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-        }
-        .search-container {
-            margin: 20px;
-        }
-        .search-results {
-            margin-top: 20px;
-        }
-        .search-results table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .search-results th, .search-results td {
-            border: 1px solid #333;
-            padding: 10px;
-            text-align: left;
-        }
-        .search-results th {
-            background-color: whitesmoke;
-            color: #333;
-        }
-    </style>
+    <title>Search</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <nav class="navbar">
-        <h2>Admin Dashboard</h2>
-        <ul>
-            <li><a href="a-dashboard.php">Home</a></li>
-            <li><a href="#" id="openSearch">Search</a></li>
-            <li><a href="a-students.php">Students</a></li>
-            <li><a href="a-currents.php">Current Sit-in</a></li>
-            <li><a href="a-vrecords.php">Visit Records</a></li>
-            <li><a href="a-logout.php">Logout</a></li>
+<body class="bg-cover bg-center h-screen flex" style="background-image: url('img/5.jpg');">
+    <nav class="w-60 bg-green-700 bg-opacity-60 text-green-900 p-5 rounded-r-2xl shadow-lg">
+        <h2 class="text-2xl font-bold">Admin Dashboard</h2>
+        <ul class="mt-4 space-y-2">
+            <li><a href="a-dashboard.php" class="block text-white font-bold">Home</a></li>
+            <li><a href="#" id="openSearch" class="block text-white font-bold">Search</a></li>
+            <li><a href="a-students.php" class="block text-white font-bold">Students</a></li>
+            <li><a href="a-currents.php" class="block text-white font-bold">Current Sit-in</a></li>
+            <li><a href="a-vrecords.php" class="block text-white font-bold">Visit Records</a></li>
+            <li><a href="a-logout.php" class="block text-white font-bold">Logout</a></li>
         </ul>
     </nav>
-    <div class="search-container">
-        <h2>Search Results</h2>
-        <?php if (!empty($search_results)): ?>
-            <div class="search-results">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Email</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($search_results as $result): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($result['idno']); ?></td>
-                                <td><?php echo htmlspecialchars($result['firstname']); ?></td>
-                                <td><?php echo htmlspecialchars($result['lastname']); ?></td>
-                                <td><?php echo htmlspecialchars($result['email']); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+
+    <div class="flex-1 p-6 space-y-6">
+        <div class="text-center text-2xl font-bold text-green-900">Search</div>
+        <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg">
+            <h3 class="text-xl font-bold text-green-900 mb-4">Search Records</h3>
+            <div class="search-container">
+                <h2 class="text-xl font-bold text-green-900 mb-4">Search Results</h2>
+                <?php if (!empty($search_results)): ?>
+                    <div class="search-results">
+                        <table class="min-w-full bg-white bg-opacity-20 rounded-xl shadow-lg">
+                            <thead>
+                                <tr>
+                                    <th class="py-2 px-4 border-b">ID</th>
+                                    <th class="py-2 px-4 border-b">First Name</th>
+                                    <th class="py-2 px-4 border-b">Last Name</th>
+                                    <th class="py-2 px-4 border-b">Email</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($search_results as $result): ?>
+                                    <tr>
+                                        <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($result['idno']); ?></td>
+                                        <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($result['firstname']); ?></td>
+                                        <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($result['lastname']); ?></td>
+                                        <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($result['email']); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else: ?>
+                    <p class="text-red-500">No results found.</p>
+                <?php endif; ?>
             </div>
-        <?php else: ?>
-            <p>No results found.</p>
-        <?php endif; ?>
+        </div>
     </div>
 </body>
 </html>

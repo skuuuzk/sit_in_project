@@ -1,15 +1,40 @@
 <?php
-include 'config/db.php'; // Assuming you have a file for database connection
+require_once('config/db.php'); // Assuming you have a file for database connection
 
-// Fetch user information from the database
+// Ensure user is logged in
+if (!isset($_SESSION['idno'])) {
+    header("Location: login.php");
+    exit();
+}
+
 $idno = $_SESSION['idno'];
-$query = "SELECT idno AS idno, firstname AS FIRSTNAME, lastname AS LASTNAME, session AS remaining_sessions, profile_pic FROM users WHERE idno = '$idno'";
+
+// Fetch user details
+$query = "SELECT firstname, lastname, session AS remaining_sessions, profile_pic FROM users WHERE idno = '$idno'";
 $result = mysqli_query($conn, $query);
 $user = mysqli_fetch_assoc($result);
 
-$student_name = $user['FIRSTNAME'] . " " . $user['LASTNAME'];
+$student_name = $user['firstname'] . " " . $user['lastname'];
 $remaining_sessions = $user['remaining_sessions'];
 $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'img/default.png';
+
+// Handle reservation submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['purpose'], $_POST['lab'], $_POST['time_in'], $_POST['date'])) {
+    $purpose = trim($_POST['purpose']);
+    $lab = trim($_POST['lab']);
+    $time_in = trim($_POST['time_in']);
+    $date = trim($_POST['date']);
+
+    if (!empty($purpose) && !empty($lab) && !empty($time_in) && !empty($date)) {
+        $stmt = $conn->prepare("INSERT INTO reservations (idno, purpose, lab, time_in, date, status) VALUES (?, ?, ?, ?, ?, 'pending')");
+        $stmt->bind_param("issss", $idno, $purpose, $lab, $time_in, $date);
+        $stmt->close();
+
+        // Redirect with success message
+        header("Location: reservation.php?status=success");
+        exit();
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,118 +42,77 @@ $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'img/defaul
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-            background-image: url(img/5.jpg); /* Background image */
-            background-size: cover; /* Cover the entire viewport */
-            display: flex;
-            height: 100vh;
-        }        
-        .nav-container {
-            width: 200px;
-            background: rgba(255, 255, 255, 0.1); /* Transparent background */
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
-            backdrop-filter: blur(1px); /* Frosted glass effect */
-            background-color:rgba(119, 152, 95, 0.54);
-            color:rgb(11, 27, 3);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 10px 20px;
-            border-radius: 0 20px 20px 0;
-        }
-
-        .nav-container a {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color:rgb(1, 23, 13);
-            font-size: 16px;
-            margin: 30px 0;
-            padding: 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .nav-container a i {
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
-        .nav-container a:hover {
-            background-color:#DEE9DC;
-            color: seagreen;          
-        }
-
-        .nav-container a.active {
-            font-weight: bold;
-            background-color: #BACEAB;
-        }
-
-        .logo {
-            margin: 50px auto;
-            text-align: center;
-        }
-
-        .logo img {
-            width: 90px;
-            height: 90px; /* Set height to make it circular */
-            object-fit: cover; /* Ensure the image covers the area */
-            border-radius: 50%;
-            border: 2px solid #475E53; /* Border around the image */
-        }
-        .container { 
-            flex: 1; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            padding: 20px;
-        }
-        .form-container { 
-            padding: 30px; 
-            border-radius: 10px; 
-            background: rgba(255, 255, 255, 0.1); /* Transparent background */
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
-            backdrop-filter: blur(10px); /* Frosted glass effect */            max-width: 450px; 
-            width: 100%;
-            border: 2px solid #475E53; 
-        }
-        .form-container h2 { 
-            text-align: center;
-            background-color: #475E53;
-            border-radius: 5px 5px 0 0;
-            padding: 5px;
-            color: white;
-            margin: -30px -30px 20px -30px;
-        }
-        p { 
-            text-align: center; 
-            font-size: 16px; 
-             
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="nav-container">
-        <div class="logo">
-            <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Logo">
-            <p style="text-align: center;"> <?php echo htmlspecialchars($student_name); ?> </p>
-            <p><strong>Session:</strong> <?php echo htmlspecialchars($remaining_sessions); ?></p>
+<body class="bg-cover bg-center h-screen flex" style="background-image: url('img/5.jpg');">
+    <nav class="w-60 bg-green-700 bg-opacity-60 text-green-900 p-5 rounded-r-2xl shadow-lg fixed top-0 left-0 h-full">
+        <div class="logo text-center mb-6">
+            <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile" class="w-24 h-24 object-cover rounded-full border-2 border-green-800 mx-auto">
+            <p class="mt-2 text-white font-bold"><?php echo htmlspecialchars($student_name); ?></p>
+            <p class="text-sm text-gray-200"><strong>Session:</strong> <?php echo htmlspecialchars($remaining_sessions); ?></p>
         </div>
-        <a href="dashboard.php"><i class="fas fa-user"></i><span>Home</span></a>
-        <a href="edit.php"><i class="fas fa-edit"></i><span>Profile</span></a>
-        <a href="reservation.php" class="active"><i class="fas fa-calendar-check"></i><span> Reservation</span></a>
-        <a href="history.php"><i class="fas fa-history"></i><span> History</span></a>
-        <a href="notification.php"><i class="fas fa-bell"></i><span>Notifications</span></a>
-        <a href="logout.php"><i class="fas fa-sign-out-alt"></i><span> Logout</span></a>
-    </div>
-    <div class="container">
-        <div class="form-container">
-            <h2>Reservation</h2>
-            <p>The reservation feature is temporarily unavailable. Please contact the admin for assistance.</p>
+        <a href="dashboard.php" class="flex items-center text-white font-medium mb-5 p-3 rounded hover:bg-green-800">
+            <i class="fas fa-user mr-3"></i> Home
+        </a>
+        <a href="edit.php" class="flex items-center text-white font-medium mb-5 p-3 rounded hover:bg-green-800">
+            <i class="fas fa-edit mr-3"></i> Profile
+        </a>
+        <a href="reservation.php" class="flex items-center text-white font-medium mb-5 p-3 rounded bg-green-800">
+            <i class="fas fa-calendar-check mr-3"></i> Reservation
+        </a>
+        <a href="history.php" class="flex items-center text-white font-medium mb-5 p-3 rounded hover:bg-green-800">
+            <i class="fas fa-history mr-3"></i> History
+        </a>
+        <a href="notification.php" class="flex items-center text-white font-medium mb-5 p-3 rounded hover:bg-green-800">
+            <i class="fas fa-bell mr-3"></i> Notifications
+        </a>
+        <a href="logout.php" class="flex items-center text-white font-medium mb-5 p-3 rounded hover:bg-green-800">
+            <i class="fas fa-sign-out-alt mr-3"></i> Logout
+        </a>
+    </nav>
+
+    <div class="flex-1 p-6 ml-60 space-y-6">
+        <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold text-green-900 mb-4">Make a Reservation</h2>
+            <?php if (isset($_GET['status']) && $_GET['status'] === 'success'): ?>
+                <p class="text-green-700 text-center">Reservation submitted successfully!</p>
+            <?php endif; ?>
+            <form method="POST" action="reservation.php" class="space-y-4">
+                <div>
+                    <label for="idno" class="block font-bold text-green-900">ID Number:</label>
+                    <input type="text" id="idno" name="idno" value="<?php echo htmlspecialchars($idno); ?>" class="w-full p-2 border rounded bg-gray-100" readonly>
+                </div>
+                <div>
+                    <label for="student_name" class="block font-bold text-green-900">Student Name:</label>
+                    <input type="text" id="student_name" name="student_name" value="<?php echo htmlspecialchars($student_name); ?>" class="w-full p-2 border rounded bg-gray-100" readonly>
+                </div>
+                <div>
+                    <label for="remaining_sessions" class="block font-bold text-green-900">Remaining Sessions:</label>
+                    <input type="text" id="remaining_sessions" name="remaining_sessions" value="<?php echo htmlspecialchars($remaining_sessions); ?>" class="w-full p-2 border rounded bg-gray-100" readonly>
+                </div>
+                <div>
+                    <label for="purpose" class="block font-bold text-green-900">Purpose:</label>
+                    <textarea id="purpose" name="purpose" rows="3" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required></textarea>
+                </div>
+                <div>
+                    <label for="lab" class="block font-bold text-green-900">Laboratory:</label>
+                    <select id="lab" name="lab" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                        <option value="">Select Laboratory</option>
+                        <option value="Lab 1">Lab 1</option>
+                        <option value="Lab 2">Lab 2</option>
+                        <option value="Lab 3">Lab 3</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="time_in" class="block font-bold text-green-900">Time In:</label>
+                    <input type="time" id="time_in" name="time_in" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                </div>
+                <div>
+                    <label for="date" class="block font-bold text-green-900">Date:</label>
+                    <input type="date" id="date" name="date" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                </div>
+                <button type="submit" class="w-full bg-green-700 text-white p-2 rounded hover:bg-green-800">Submit Reservation</button>
+            </form>
         </div>
     </div>
 </body>

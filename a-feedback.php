@@ -8,7 +8,7 @@ if (!isset($_SESSION['admin_id'])) {
 }
 
 // Fetch feedback records
-$query = "SELECT r.idno, CONCAT(u.firstname, ' ', u.lastname) AS student_name, r.time_in, r.feedback, r.feedback_timestamp 
+$query = "SELECT r.idno, CONCAT(u.firstname, ' ', u.lastname) AS student_name, r.time_in, r.feedback, r.feedback_timestamp, r.rating 
           FROM reservations r 
           JOIN users u ON r.idno = u.idno 
           WHERE r.feedback IS NOT NULL 
@@ -21,160 +21,63 @@ $feedback_records = mysqli_fetch_all($result, MYSQLI_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Feedback</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <title>Feedback</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-            * {
-            margin: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background-image: url(img/5.jpg); /* Background image */
-            background-size: cover; /* Cover the entire viewport */
-            display: flex;
-        }
-
-        .nav-container {
-            width: 240px;
-            background: rgba(255, 255, 255, 0.1); /* Transparent background */
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
-            backdrop-filter: blur(1px); /* Frosted glass effect */
-            background-color:rgba(119, 152, 95, 0.54);
-            color:rgb(11, 27, 3);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 10px 20px;
-            border-radius: 0 20px 20px 0;
-            justify-content: stretch;
-        }
-
-        .nav-container a {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color:rgb(1, 23, 13);
-            font-size: 16px;
-            margin: 23.5px 0;
-            padding: 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .nav-container a i {
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
-        .nav-container a:hover {
-            background-color:#DEE9DC;
-            color: seagreen;       
-        }
-
-        .nav-container a.active {
-            font-weight: bold;
-            background-color: #BACEAB;
-        }
-
-        .logo {
-            margin: 25px auto;
-            text-align: center;
-        }
-
-        .logo img {
-            width: 70px;
-            height: 70px; /* Set height to make it circular */
-            object-fit: cover; /* Ensure the image covers the area */
-            border-radius: 50%;
-            border: 2px solid #475E53; /* Border around the image */
-        }
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #4d5572; /* Background color */
-            color: white; /* Text color */
-            padding: 10px 0;
-            text-align: center;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add shadow for better visibility */
-        }
-
-        .container {
-            flex-direction: column;
-            gap: 20px;
-            padding: 50px;
-            justify-content: center;
-            position: relative;
-        }
-        /* Table Styling */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #333;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: whitesmoke;
-            color: #333;
-        }
-    </style>
 </head>
-<body>
-<nav class="nav-container"> 
-        <div class="logo">
-            <img src="img/ccs.png" alt="Logo" style="width: 100px; height: auto; margin-bottom: 20px;">
+<body class="bg-cover bg-center h-screen flex" style="background-image: url('img/5.jpg');">
+    <nav class="w-60 bg-green-700 bg-opacity-60 text-green-900 p-5 rounded-r-2xl shadow-lg">
+        <div class="logo text-center mb-5">
+            <img src="img/ccs.png" alt="Logo" class="w-24 h-auto mx-auto mb-5 rounded-full border-2 border-green-900">
         </div>      
-        <a href="a-dashboard.php"><i class="fas fa-user"></i><span>Home</span></a>
-        <a href="#" onclick="openModal('searchModal')"><i class="fas fa-search"></i> <span>Search</span></a>
-        <a href="a-students.php"><i class="fas fa-users"></i> <span>Students</span></a>
-        <a href="a-currents.php"><i class="fas fa-user-clock"></i> <span>Current Sit-in</span></a>
-        <a href="a-vrecords.php"><i class="fas fa-book"></i> <span>Visit Records</span></a>
-        <a href="a-feedback.php" class="active"><i class="fas fa-comments"></i> <span>Feedback</span></a>
-        <a href="a-reports.php"><i class="fas fa-chart-line"></i> <span>Reports</span></a>
-        <a href="a-logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+        <a href="a-dashboard.php" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded hover:bg-green-200 transition duration-300"><i class="fas fa-user mr-2"></i><span>Home</span></a>
+        <a href="#" onclick="openModal('searchModal')" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded hover:bg-green-200 transition duration-300"><i class="fas fa-search mr-2"></i> <span>Search</span></a>
+        <a href="a-students.php" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded hover:bg-green-200 transition duration-300"><i class="fas fa-users mr-2"></i> <span>Students</span></a>
+        <a href="a-currents.php" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded hover:bg-green-200 transition duration-300"><i class="fas fa-user-clock mr-2"></i> <span>Current Sit-in</span></a>
+        <a href="a-vrecords.php" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded hover:bg-green-200 transition duration-300"><i class="fas fa-book mr-2"></i> <span>Visit Records</span></a>
+        <a href="a-feedback.php" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded bg-green-200 font-bold"><i class="fas fa-comments mr-2"></i> <span>Feedback</span></a>
+        <a href="a-reports.php" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded hover:bg-green-200 transition duration-300"><i class="fas fa-chart-line mr-2"></i> <span>Reports</span></a>
+        <a href="a-logout.php" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded hover:bg-green-200 transition duration-300"><i class="fas fa-sign-out-alt mr-2"></i> <span>Logout</span></a>
     </nav>
 
-    <div class="container">
-        <div class="header-container">
-            <header>
-                <h1>Feedbacks</h1>
-            </header>
-        </div>
-
-        <div class="feedback-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID Number</th>
-                    <th>Name</th>
-                    <th>Sit-in Date/Time</th>
-                    <th>Feedback</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (!empty($feedback_records)): ?>
-                    <?php foreach ($feedback_records as $record): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($record['idno']); ?></td>
-                            <td><?php echo htmlspecialchars($record['student_name']); ?></td>
-                            <td><?php echo htmlspecialchars($record['time_in']); ?></td>
-                            <td><?php echo nl2br(htmlspecialchars($record['feedback'])); ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="4" style="text-align: center;">No feedback records found.</td>
+    <div class="flex-1 p-6 space-y-6">
+        <div class="text-center text-2xl font-bold text-green-900">Feedback</div>
+        <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg">
+            <h3 class="text-xl font-bold text-green-900 mb-4">User Feedback</h3>
+            <table class="w-full border-collapse mt-5">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="border p-2">ID Number</th>
+                        <th class="border p-2">Name</th>
+                        <th class="border p-2">Sit-in Date/Time</th>
+                        <th class="border p-2">Feedback</th>
+                        <th class="border p-2">Rating</th>
                     </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php if (!empty($feedback_records)): ?>
+                        <?php foreach ($feedback_records as $record): ?>
+                            <tr class="bg-white bg-opacity-50">
+                                <td class="border p-2"><?php echo htmlspecialchars($record['idno']); ?></td>
+                                <td class="border p-2"><?php echo htmlspecialchars($record['student_name']); ?></td>
+                                <td class="border p-2"><?php echo htmlspecialchars($record['time_in']); ?></td>
+                                <td class="border p-2"><?php echo nl2br(htmlspecialchars($record['feedback'])); ?></td>
+                                <td class="border p-2">
+                                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                                        <i class="fa fa-star <?php echo $i <= $record['rating'] ? 'text-yellow-500' : 'text-gray-300'; ?> text-lg mx-0.5"></i>
+                                    <?php endfor; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="5" class="text-center p-2">No feedback records found.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
+    <?php include 'common-modals.php'; ?>
 </body>
 </html>

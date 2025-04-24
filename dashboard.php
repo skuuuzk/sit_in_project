@@ -33,158 +33,63 @@ $unread_count = $notification_data['unread_count'] ?? 0;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-            background-image: url(img/5.jpg); /* Background image */
-            background-size: cover; /* Cover the entire viewport */
-            display: flex;
-            height: 100vh;
-        }        
-        .nav-container {
-            width: 200px;
-            background: rgba(255, 255, 255, 0.1); /* Transparent background */
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
-            backdrop-filter: blur(1px); /* Frosted glass effect */
-            background-color:rgba(119, 152, 95, 0.54);
-            color:rgb(11, 27, 3);
-            padding: 10px 20px;
-            border-radius: 0 20px 20px 0;
-            
-        }
-
-        .nav-container a {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color:rgb(1, 23, 13);
-            font-size: 16px;
-            margin: 30px 0;
-            padding: 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .nav-container a i {
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
-        .nav-container a:hover {
-            background-color:#DEE9DC;
-            color: seagreen;       
-        }
-
-        .nav-container a.active {
-            font-weight: bold;
-            background-color: #BACEAB;
-        }
-
-        .logo {
-            margin: 50px auto;
-            text-align: center;
-        }
-
-        .logo img {
-            width: 90px;
-            height: 90px; /* Set height to make it circular */
-            object-fit: cover; /* Ensure the image covers the area */
-            border-radius: 50%;
-            border: 2px solid #475E53; /* Border around the image */
-        }
-
-        .container {
-            display: flex;
-            gap: 20px;
-            max-width: 900px;
-            margin: auto;
-            justify-content: center;
-            align-items: stretch;
-            height: 100vh;
-            width: 100%;        
-        }
-
-        .box {
-            margin: 90px auto;
-            height: 70%;
-            padding: 25px;
-            border-radius: 10px;
-            flex: 1;
-            border: 3px solid #475E53;
-            display: flex;
-            flex-direction: column;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.1); /* Transparent background */
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
-            backdrop-filter: blur(10px); /* Frosted glass effect */
-            overflow: hidden;
-            overflow: auto;             /* Vertical scrollbar appears when needed */
-                
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            background-color: #475E53;
-            border-radius: 5px 5px 0 0;
-            padding: 10px;
-            color: white;
-        }
-
-        .announcement p, .rules p {
-            margin: 10px 0;
-            text-align: justify;
-        }
-    </style>
 </head>
-<body>
-
-    <div class="nav-container">
-        <div class="logo">
-            <input type="file" id="fileUpload" accept="img/*" style="display: none;">
-            <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile">
-            <p style="text-align: center;">
-                <?php echo htmlspecialchars($full_name); ?>
-            </p>
-            <p><strong>Session:</strong> <?php echo htmlspecialchars($session_count); ?></p>
-        </div> 
-        
-        <a href="dashboard.php" class="active"><i class="fas fa-user"></i><span>Home</span></a>
-        <a href="edit.php"><i class="fas fa-edit"></i><span>Profile</span></a>
-        <a href="reservation.php"><i class="fas fa-calendar-check"></i><span> Reservation</span></a>
-        <a href="history.php"><i class="fas fa-history"></i><span> History</span></a>
-        <a href="notification.php"><i class="fas fa-bell"></i><span>Notifications</span><?php if ($unread_count > 0) echo " ($unread_count)"; ?></a>
-        <a href="logout.php"><i class="fas fa-sign-out-alt"></i><span> Logout</span></a>
-    </div>
-
-    <div class="container">
-        <div class="box announcement">
-            <h2>Announcements</h2>
-            <?php if (!empty($announcements)): ?>
-                <?php foreach ($announcements as $announcement): ?>
-                    <p><strong><?php echo htmlspecialchars($announcement['title']); ?></strong><br>
-                    <?php echo htmlspecialchars($announcement['content']); ?><br>
-                    <small><?php echo htmlspecialchars($announcement['created_at']); ?></small></p>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p>No announcements available.</p>
-            <?php endif; ?>
+<body class="bg-cover bg-center h-screen flex" style="background-image: url('img/5.jpg');">
+    <nav class="w-60 bg-green-700 bg-opacity-60 text-green-900 p-5 rounded-r-2xl shadow-lg fixed top-0 left-0 h-full">
+        <div class="logo text-center mb-6">
+            <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile" class="w-24 h-24 object-cover rounded-full border-2 border-green-800 mx-auto">
+            <p class="mt-2 text-white font-bold"><?php echo htmlspecialchars($full_name); ?></p>
+            <p class="text-sm text-gray-200"><strong>Session:</strong> <?php echo htmlspecialchars($session_count); ?></p>
         </div>
-        
-        <div class="box rules">
-            <h2>Rules and Regulation</h2>
-            <h3><strong>University of Cebu</strong><br><strong>COLLEGE OF INFORMATION & COMPUTER STUDIES</strong></h3>
-            <h3><strong>LABORATORY RULES AND REGULATIONS</strong></h3>
-            <p>To avoid embarrassment and maintain camaraderie with your friends and superiors at our laboratories, please observe the following:</p>
-            <p>1. Maintain silence, proper decorum, and discipline inside the laboratory. Mobile phones, walkmans and other personal pieces of equipment must be switched off.</p>
-            <p>2. Games are not allowed inside the lab. This includes computer-related games, card games, and other games that may disturb the operation of the lab.</p>
-            <p>3. Surfing the Internet is allowed only with the permission of the instructor. Downloading and installing of software are strictly prohibited.</p>
+        <a href="dashboard.php" class="flex items-center text-white font-medium mb-5 p-3 rounded hover:bg-green-800 active:bg-green-900">
+            <i class="fas fa-user mr-3"></i> Home
+        </a>
+        <a href="edit.php" class="flex items-center text-white font-medium mb-5 p-3 rounded hover:bg-green-800">
+            <i class="fas fa-edit mr-3"></i> Profile
+        </a>
+        <a href="reservation.php" class="flex items-center text-white font-medium mb-5 p-3 rounded hover:bg-green-800">
+            <i class="fas fa-calendar-check mr-3"></i> Reservation
+        </a>
+        <a href="history.php" class="flex items-center text-white font-medium mb-5 p-3 rounded hover:bg-green-800">
+            <i class="fas fa-history mr-3"></i> History
+        </a>
+        <a href="notification.php" class="flex items-center text-white font-medium mb-5 p-3 rounded hover:bg-green-800">
+            <i class="fas fa-bell mr-3"></i> Notifications <?php if ($unread_count > 0) echo "($unread_count)"; ?>
+        </a>
+        <a href="logout.php" class="flex items-center text-white font-medium mb-5 p-3 rounded hover:bg-green-800">
+            <i class="fas fa-sign-out-alt mr-3"></i> Logout
+        </a>
+    </nav>
+
+    <div class="flex-1 p-6 ml-60 space-y-6">
+        <div class="grid grid-cols-2 gap-6">
+            <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg">
+                <h2 class="text-xl font-bold text-green-900 mb-4">Announcements</h2>
+                <div class="space-y-4 max-h-72 overflow-y-auto">
+                    <?php if (!empty($announcements)): ?>
+                        <?php foreach ($announcements as $announcement): ?>
+                            <div class="p-4 bg-white bg-opacity-50 rounded-lg shadow">
+                                <p class="font-bold text-green-900"><?php echo htmlspecialchars($announcement['title']); ?></p>
+                                <p class="text-sm text-gray-700"><?php echo htmlspecialchars($announcement['content']); ?></p>
+                                <p class="text-xs text-gray-500"><?php echo htmlspecialchars($announcement['created_at']); ?></p>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p class="text-gray-700">No announcements available.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg">
+                <h2 class="text-xl font-bold text-green-900 mb-4">Rules and Regulations</h2>
+                <div class="space-y-4 max-h-72 overflow-y-auto">
+                    <p class="text-sm text-gray-700">1. Maintain silence, proper decorum, and discipline inside the laboratory.</p>
+                    <p class="text-sm text-gray-700">2. Games are not allowed inside the lab.</p>
+                    <p class="text-sm text-gray-700">3. Surfing the Internet is allowed only with the permission of the instructor.</p>
+                </div>
+            </div>
         </div>
     </div>
-
-    </body>
+</body>
 </html>

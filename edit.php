@@ -27,156 +27,43 @@ $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'img/defaul
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-        body { 
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-            background-image: url(img/5.jpg); /* Background image */
-            background-size: cover; /* Cover the entire viewport */
-            display: flex;
-            height: 100vh;
-        }        
-        .nav-container { 
-            width: 237px; 
-            background: rgba(255, 255, 255, 0.1); /* Transparent background */
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
-            backdrop-filter: blur(1px); /* Frosted glass effect */
-            background-color:rgba(119, 152, 95, 0.54);
-            color:rgb(11, 27, 3);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 10px 20px;
-            border-radius: 0 20px 20px 0;
-        }
-        .nav-container a { 
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color:rgb(1, 23, 13);
-            font-size: 16px;
-            margin: 30px 0;
-            padding: 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-        .nav-container a i { 
-            margin-right: 10px; 
-            font-size: 18px; 
-        }
-        .nav-container a:hover { 
-            background-color:#DEE9DC;
-            color: seagreen;      
-        }
-        .nav-container a.active { 
-            font-weight: bold;
-            background-color: #BACEAB;
-        }
-        .logo { 
-            margin: 50px auto; 
-            text-align: center; 
-        }
-        .logo img { 
-            width: 90px;
-            height: 90px; /* Set height to make it circular */
-            object-fit: cover; /* Ensure the image covers the area */
-            border-radius: 50%;
-            border: 2px solid #475E53; /* Border around the image */
-        }
-        .container { 
-            margin:auto; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            width: 100%; 
-        }
-
-        .student {
-            width: 350px;
-            margin: 90px auto;
-            height: auto;
-            padding: 25px;
-            border-radius: 10px;
-            text-align: center;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            border: 3px solid #475E53;
-        }
-        .title {
-            background-color: #475E53;
-            color: white;
-            padding: 5px;
-            border-radius: 5px 5px 0 0;
-            margin-bottom: 20px;
-        }
-        .profile-img img {
-            width: 90px;
-            height: 90px; /* Set height to make it circular */
-            object-fit: cover; /* Ensure the image covers the area */
-            border-radius: 50%;
-            border: 2px solid #475E53; /* Border around the image */
-        }
-        .info p {
-            margin: 10px 0;
-            text-align: justify; 
-
-        }
-        .edit-btn {
-            background-color: #475E53;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            border-radius: 5px;
-            margin-top: 10px;
-            transition: 0.3s;
-        }
-        .edit-btn:hover {
-            background-color: #DEE9DC;
-            color: seagreen;       
-
-        }
-    </style>
+    <title>Edit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="nav-container">
-            <div class="logo">
-                <input type="file" id="fileUpload" accept="img/*" style="display: none;">
-                <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile">
-                <p style="text-align: center;">
-                    <?php echo htmlspecialchars($full_name); ?>
-                </p>
-                <p><strong>Session:</strong> <?php echo $session_count; ?></p>
+<body class="bg-cover bg-center h-screen flex items-center justify-center" style="background-image: url('img/5.jpg');">
+    <div class="bg-white bg-opacity-20 p-8 rounded-lg shadow-lg w-96">
+        <h2 class="text-2xl font-bold text-center text-green-900 mb-6">Edit Details</h2>
+        <form action="edit.php" method="post" class="space-y-4">
+            <div>
+                <label for="idno" class="block font-bold text-green-900">ID Number:</label>
+                <input type="text" id="idno" name="idno" value="<?php echo htmlspecialchars($user['idno']); ?>" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" readonly>
             </div>
-            
-            <a href="dashboard.php" ><i class="fas fa-user"></i><span>Home</span></a>
-            <a href="edit.php" class="active"><i class="fas fa-edit"></i><span>Profile</span></a>
-            <a href="reservation.php"><i class="fas fa-calendar-check"></i><span> Reservation</span></a>
-            <a href="history.php"><i class="fas fa-history"></i><span> History</span></a>
-            <a href="notification.php"><i class="fas fa-bell"></i><span>Notifications</span></a>
-            <a href="logout.php"><i class="fas fa-sign-out-alt"></i><span> Logout</span></a>
-        </div>
-        <div class="container">
-            <div class="student">
-                <h2 class="title">Student Information</h2>
-                <div class="profile-img">
-                    <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile Picture">
-                </div>
-                <div class="info">
-                    <p><strong>ID Number:</strong> <?php echo htmlspecialchars($user['idno']); ?></p>
-                    <p><strong>Name     ~:</strong> <?php echo htmlspecialchars($full_name); ?></p>
-                    <p><strong>Year Level:</strong> <?php echo htmlspecialchars($user['YEAR']); ?></p>
-                    <p><strong>Course    :</strong> <?php echo htmlspecialchars($user['COURSE']); ?></p>
-                    <p><strong>Email     :</strong> <?php echo htmlspecialchars($user['EMAIL']); ?></p>
-                    <p><strong>Address   :</strong> <?php echo htmlspecialchars($user['ADDRESS']); ?></p>
-                </div>
-                    <button class="edit-btn" onclick="window.location.href='edit-profile.php'">Edit Profile</button>
+            <div>
+                <label for="firstname" class="block font-bold text-green-900">First Name:</label>
+                <input type="text" id="firstname" name="firstname" value="<?php echo htmlspecialchars($user['FIRSTNAME']); ?>" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
             </div>
-        </div>
+            <div>
+                <label for="lastname" class="block font-bold text-green-900">Last Name:</label>
+                <input type="text" id="lastname" name="lastname" value="<?php echo htmlspecialchars($user['LASTNAME']); ?>" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+            </div>
+            <div>
+                <label for="year" class="block font-bold text-green-900">Year Level:</label>
+                <input type="text" id="year" name="year" value="<?php echo htmlspecialchars($user['YEAR']); ?>" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+            </div>
+            <div>
+                <label for="course" class="block font-bold text-green-900">Course:</label>
+                <input type="text" id="course" name="course" value="<?php echo htmlspecialchars($user['COURSE']); ?>" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+            </div>
+            <div>
+                <label for="email" class="block font-bold text-green-900">Email:</label>
+                <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['EMAIL']); ?>" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+            </div>
+            <div>
+                <label for="address" class="block font-bold text-green-900">Address:</label>
+                <input type="text" id="address" name="address" value="<?php echo htmlspecialchars($user['ADDRESS']); ?>" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+            </div>
+            <button type="submit" class="w-full bg-green-700 text-white p-2 rounded hover:bg-green-800">Save Changes</button>
+        </form>
     </div>
 </body>
 </html>

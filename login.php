@@ -31,106 +31,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <title>Login</title>
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-image: url(img/5.jpg); /* Background image */
-            background-size: cover; /* Cover the entire viewport */
-        }
-
-        .login-container {
-            background: rgba(255, 255, 255, 0.1); /* Transparent background */
-            color:#DEE9DC;
-            padding: 30px;
-            border-radius: 10px;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            border: #475E53 2px solid;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
-            backdrop-filter: blur(10px); /* Frosted glass effect */
-        }
-
-        .login-container h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            background-color: #475E53;
-            border-radius: 5px 5px 0 0;
-            padding: 5px;
-            color: #DEE9DC;
-        }
-
-        .login-container label {
-            font-weight: bold;
-            display: block;
-            margin-top: 15px;
-            text-align: left;
-            color:rgb(39, 51, 46);
-        }
-
-        .login-container input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        .login-container button {
-            width: 100%;
-            padding: 15px;
-            background-color: #475E53;
-            color: whitesmoke;
-            border: none;
-            cursor: pointer;
-            margin-top: 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            
-        }
-
-        .login-container button:hover {
-            background-color: #DEE9DC;
-            color: black;
-        }
-
-        .login-container .forgot-password {
-            margin-top: 10px;
-            display: block;
-            color: black;
-            text-decoration: none;
-        }
-
-        .login-container .forgot-password:hover {
-            text-decoration: none;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="login-container">
-        <h2>Login</h2>
-        <form method="POST" action="">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" placeholder="Username" required>
-
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" placeholder="Password" required>
-
+<body class="bg-gray-100 h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+        <h2 class="text-2xl font-bold text-center text-green-900 mb-6">Login</h2>
+        <form action="login.php" method="post" class="space-y-4">
+            <div>
+                <label for="username" class="block font-bold text-green-900">Username:</label>
+                <input type="text" id="username" name="username" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required>
+            </div>
+            <div>
+                <label for="password" class="block font-bold text-green-900">Password:</label>
+                <input type="password" id="password" name="password" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" required>
+            </div>
             <?php if (isset($error)): ?>
                 <p style="color: red;"><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></p>
             <?php endif; ?>
-
-            <button type="submit" name="login">Login</button>
-            <a href="register.php" class="forgot-password">Don't have an account? Click here.</a>
+            <button type="submit" name="login" class="w-full bg-green-700 text-white p-2 rounded hover:bg-green-800">Login</button>
+            <a href="register.php" class="block text-center text-green-900 mt-4">Don't have an account? Click here.</a>
         </form>
     </div>
 </body>

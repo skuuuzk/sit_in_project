@@ -31,88 +31,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-image: url(img/5.jpg); /* Background image */
-            background-size: cover; /* Cover the entire viewport */
-        }
-
-        .login-container {
-            background: rgba(255, 255, 255, 0.1); /* Transparent background */
-            color:#DEE9DC;
-            padding: 30px;
-            border-radius: 10px;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            border: #475E53 2px solid;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
-            backdrop-filter: blur(10px); /* Frosted glass effect */
-        }
-        .login-container h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            background-color: #475E53;
-            border-radius: 5px 5px 0 0;
-            padding: 5px;
-            color: #DEE9DC;
-        }
-        .login-container input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        .login-container label {
-            font-weight: bold;
-            display: block;
-            margin-top: 15px;
-            text-align: left;
-            color:rgb(39, 51, 46);
-        }
-
-        .login-container button {
-            width: 100%;
-            padding: 15px;
-            background-color: #475E53;
-            color: whitesmoke;
-            border: none;
-            cursor: pointer;
-            margin-top: 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            
-        }
-
-        .login-container button:hover {
-            background-color: #DEE9DC;
-            color: black;
-        }
-        .error-message {
-            color: red;
-            margin-top: 10px;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="login-container">
-        <h2>Admin Login</h2>
-        <form action="a-login.php" method="post">
-            <label for="username">Username:</label>
-            <input type="text" name="username" placeholder="Username" required>
-            <label for="password">Password:</label>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">Login</button>
+<body class="bg-cover bg-center h-screen flex items-center justify-center" style="background-image: url('img/5.jpg');">
+    <div class="bg-white bg-opacity-20 p-8 rounded-xl shadow-lg w-96">
+        <h2 class="text-center text-2xl font-bold text-green-900 mb-6">Admin Login</h2>
+        <form action="a-login.php" method="post" class="space-y-4">
+            <div>
+                <label for="username" class="block font-bold text-green-900">Username:</label>
+                <input type="text" id="username" name="username" required class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+            </div>
+            <div>
+                <label for="password" class="block font-bold text-green-900">Password:</label>
+                <input type="password" id="password" name="password" required class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+            </div>
+            <button type="submit" class="w-full px-6 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800">Login</button>
         </form>
         <?php if ($error_message): ?>
             <p class="error-message"><?php echo htmlspecialchars($error_message); ?></p>
