@@ -1,13 +1,12 @@
 <?php
-/*session_start();*/
 require_once 'config/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $idno = $_POST['idno'];
-    $last_name = $_POST['last_name'];
-    $first_name = $_POST['first_name'];
-    $middle_name = $_POST['middle_name'];
-    $course_level = $_POST['course_level'];
+    $lastname = $_POST['lastname'];
+    $firstname = $_POST['firstname'];
+    $midname = $_POST['midname'];
+    $year = $_POST['year'];
     $course = $_POST['course'];
     $username = $_POST['username'];
     $password = $_POST['password'];
@@ -24,9 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     $stmt = $conn->prepare("INSERT INTO users (idno, lastname, firstname, midname, course, year, username, password, email, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("isssssssss", $idno, $last_name, $first_name, $middle_name, $course, $course_level, $username, $hashed_password, $email, $address);
+    $stmt->bind_param("isssssssss", $idno, $lastname, $firstname, $midname, $course, $year, $username, $hashed_password, $email, $address);
 
     if ($stmt->execute()) {
+        $_SESSION['success'] = "Registration successful. Please log in.";
         header("Location: login.php");
         exit();
     } else {
@@ -38,100 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Reservation</title>
-        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-    <style>
-            body {
-                font-family: 'Poppins', sans-serif;
-                margin: 0;
-                padding: 0;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                background-color: #92929288;
-            }
-
-            .container {
-                background: whitesmoke;
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                width: 100%;
-                max-width: 600px;
-                text-align: center;
-                border: #4d5572 2px solid;
-            }
-
-            .container h3 {
-                text-align: center;
-                margin-bottom: 30px;
-                background-color: #4d5572;
-                border-radius: 5px 5px 0 0;
-                padding: 5px;
-                color: white;
-            }
-
-            .container .form-group {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: space-between;
-            }
-
-            .container .form-group .form-field {
-                width: 48%;
-            }
-
-            .container label {
-                font-weight: bold;
-                display: block;
-                margin-top: 15px;
-                text-align: left;
-            }
-
-            .container input,
-            .container select {
-                width: 100%;
-                padding: 10px;
-                margin-top: 5px;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                box-sizing: border-box;
-            }
-
-            .container button {
-                width: 100%;
-                padding: 15px;
-                background-color: #4d5572;
-                color: whitesmoke;
-                border: none;
-                cursor: pointer;
-                margin-top: 20px;
-                font-size: 16px;
-                border-radius: 5px;
-            }
-
-            .container button:hover {
-                background-color: #4d5572b0;
-                color: black;
-            }
-
-            .container .back-to-login {
-                margin-top: 10px;
-                display: block;
-                color: black;
-                text-decoration: none;
-            }
-
-            .container .back-to-login:hover {
-                text-decoration: none;
-            }
-        </style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="d-flex justify-content-center align-items-center vh-100 bg-light">
     <div class="container bg-white p-4 rounded shadow" style="max-width: 600px;">
@@ -139,6 +50,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php if (isset($_SESSION['error'])): ?>
             <div class="alert alert-danger" role="alert">
                 <?php echo htmlspecialchars($_SESSION['error'], ENT_QUOTES, 'UTF-8'); ?>
+                <?php unset($_SESSION['error']); ?>
+            </div>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success" role="alert">
+                <?php echo htmlspecialchars($_SESSION['success'], ENT_QUOTES, 'UTF-8'); ?>
+                <?php unset($_SESSION['success']); ?>
             </div>
         <?php endif; ?>
         <form method="POST" action="">
@@ -149,23 +67,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <div class="col-md-6">
                     <label for="last_name" class="form-label">Last Name:</label>
-                    <input type="text" class="form-control" id="last_name" name="last_name" required>
+                    <input type="text" class="form-control" id="lastname" name="lastname" required>
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="first_name" class="form-label">First Name:</label>
-                    <input type="text" class="form-control" id="first_name" name="first_name" required>
+                    <input type="text" class="form-control" id="firstname" name="firstname" required>
                 </div>
                 <div class="col-md-6">
                     <label for="middle_name" class="form-label">Middle Name:</label>
-                    <input type="text" class="form-control" id="middle_name" name="middle_name">
+                    <input type="text" class="form-control" id="midname" name="midname">
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="course_level" class="form-label">Course Level:</label>
-                    <select class="form-select" id="course_level" name="course_level" required>
+                    <select class="form-select" id="year" name="year" required>
                         <option value="" disabled selected>Select Course Level</option>
                         <option value="1st">1st</option>
                         <option value="2nd">2nd</option>
@@ -222,7 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </form>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
+</body>
 </html>

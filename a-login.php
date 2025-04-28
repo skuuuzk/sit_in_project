@@ -32,6 +32,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="path/to/your/script.js" defer></script>
+    <link rel="stylesheet" href="style.css"> 
+    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
 </head>
 <body class="bg-cover bg-center h-screen flex items-center justify-center" style="background-image: url('img/5.jpg');">
     <div class="bg-white bg-opacity-20 p-8 rounded-xl shadow-lg w-96">

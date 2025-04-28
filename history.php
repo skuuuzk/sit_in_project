@@ -49,8 +49,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>History Information</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">  
 </head>
 <body class="bg-cover bg-center h-screen flex" style="background-image: url('img/5.jpg');">
     <nav class="w-60 bg-green-700 bg-opacity-60 text-green-900 p-5 rounded-r-2xl shadow-lg fixed top-0 left-0 h-full">
@@ -82,9 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
     <div class="flex-1 p-6 ml-60 space-y-6">
         <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg">
             <h2 class="text-xl font-bold text-green-900 mb-4">History</h2>
-            <?php if (isset($_GET['feedback_status']) && $_GET['feedback_status'] === 'success'): ?>
-                <p class="text-green-700 text-center">Feedback submitted successfully!</p>
-            <?php endif; ?>
             <table class="w-full border-collapse bg-white bg-opacity-50 rounded-lg shadow-lg">
                 <thead>
                     <tr class="bg-green-700 text-white">
@@ -115,13 +114,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
             </table>
         </div>
     </div>
-
     <!-- Feedback Modal -->
     <div id="feedbackModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
             <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl" onclick="document.getElementById('feedbackModal').classList.add('hidden')">&times;</button>
             <h3 class="text-xl font-bold text-green-900 mb-4">Submit Feedback</h3>
-            <form method="POST" action="history.php" class="space-y-4">
+            <form method="POST" action="history.php" class="space-y-4" id="feedbackForm">
                 <div class="flex justify-center space-x-2">
                     <?php for ($i = 1; $i <= 5; $i++): ?>
                         <i class="fa fa-star text-gray-300 cursor-pointer text-2xl" data-value="<?php echo $i; ?>"></i>
@@ -135,7 +133,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['feedback'], $_POST['re
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-10 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg hidden">
+        Feedback submitted successfully!
+    </div>
+
     <script>
+        document.getElementById('feedbackForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent page reload / submit
+
+            // Close the Modal
+            document.getElementById('feedbackModal').classList.add('hidden');
+
+            // Show Toast   
+            var toast = document.getElementById('toast');
+            toast.classList.remove('hidden');
+
+            // Hide toast after 3 seconds
+            setTimeout(function() {
+                toast.classList.add('hidden');
+            }, 3000);
+        });
+
+
         const modal = document.getElementById('feedbackModal');
         const feedbackBtns = document.querySelectorAll('.feedback-btn');
         const stars = document.querySelectorAll('.fa-star');

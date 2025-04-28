@@ -1,5 +1,5 @@
 <?php
-require_once('config/db.php'); // Assuming you have a file for database connection
+require_once('config/db.php');
 
 // Ensure admin is logged in
 if (!isset($_SESSION['admin_id'])) {
@@ -7,33 +7,84 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 
-$search_results = [];
+// Fetch admin username
+$admin_id = $_SESSION['admin_id'];
+$query = "SELECT username FROM admins WHERE id = ?";
+$stmt->bind_param("i", $admin_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$admin = $result->fetch_assoc();
+$stmt->close();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['search_query'])) {
-    $search_query = $_POST['search_query'];
-    $stmt = $conn->prepare("SELECT idno, firstname, lastname, email FROM users WHERE firstname LIKE ? OR lastname LIKE ? OR email LIKE ?");
-    $like_query = '%' . $search_query . '%';
-    $stmt->bind_param("sss", $like_query, $like_query, $like_query);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $search_results = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-}
+$username = $admin['username'] ?? 'Admin';
+
+// Fetch daily statistics
+$today = date('Y-m-d');
+
+// Total sit-ins today
+$query = "SELECT COUNT(*) AS total_sit_ins FROM reservations WHERE DATE(time_in) = ? AND status = 'completed'";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("s", $today);
+$stmt->execute();
+$result = $stmt->get_result();
+$total_sit_ins = $result->fetch_assoc()['total_sit_ins'] ?? 0;
+$stmt->close();
+
+// Total feedback received today
+$query = "SELECT COUNT(*) AS total_feedback FROM reservations WHERE DATE(feedback_timestamp) = ? AND feedback IS NOT NULL";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("s", $today);
+$stmt->execute();
+$result = $stmt->get_result();
+$total_feedback = $result->fetch_assoc()['total_feedback'] ?? 0;
+$stmt->close();
+
+// Average rating today
+$query = "SELECT AVG(rating) AS average_rating FROM reservations WHERE DATE(feedback_timestamp) = ? AND rating IS NOT NULL";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("s", $today);
+$stmt->execute();
+$result = $stmt->get_result();
+$average_rating = round($result->fetch_assoc()['average_rating'] ?? 0, 2);
+$stmt->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search</title>
+    <title>Daily Analytics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="path/to/your/script.js" defer></script>
     <link rel="stylesheet" href="style.css"> 
     <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
-       <!-- Dropdown CSS -->
-       <style>
+    <style>
+        .main-content {
+            margin-left: 15rem; /* Match the width of the navbar */
+            padding: 1.5rem;
+        }
+
+        .stat-card {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-card h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #065f46;
+        }
+
+        .stat-card p {
+            font-size: 1.25rem;
+            color: #1a202c;
+        }
+        <!-- Dropdown CSS -->
         .dropdown-content {
             display: none;
             position: absolute;
@@ -64,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['search_query'])) {
             display: block;
         }
     </style>
-    <script>
+        <script>
         function toggleDropdown(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
             const isVisible = dropdown.classList.contains('show');
@@ -87,8 +138,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['search_query'])) {
         });
     </script>
 </head>
-<body class="bg-cover bg-center h-screen flex" style="background-image: url('img/5.jpg');">
-<nav class="w-60 bg-green-700 bg-opacity-60 text-green-900 p-5 rounded-r-2xl shadow-lg fixed top-0 left-0 h-full">
+<body class="bg-cover bg-center h-screen" style="background-image: url('img/5.jpg');">
+    <nav class="w-60 bg-green-700 bg-opacity-60 text-green-900 p-5 rounded-r-2xl shadow-lg fixed top-0 left-0 h-full">
         <div class="logo text-center mb-6">
             <img src="img/ccs.png" alt="Logo" class="w-20 h-20 object-cover rounded-full border-2 border-green-800 mx-auto">
             <p class="mt-2 text-white font-bold"><?php echo htmlspecialchars($username); ?></p>
@@ -135,39 +186,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['search_query'])) {
             <i class="fas fa-sign-out-alt mr-3"></i> Logout
         </a>
     </nav>
-
-    <div class="flex-1 p-6 space-y-6">
-        <div class="text-center text-2xl font-bold text-green-900">Search</div>
-        <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg">
-            <h3 class="text-xl font-bold text-green-900 mb-4">Search Records</h3>
-            <div class="search-container">
-                <h2 class="text-xl font-bold text-green-900 mb-4">Search Results</h2>
-                <?php if (!empty($search_results)): ?>
-                    <div class="search-results">
-                        <table class="min-w-full bg-white bg-opacity-20 rounded-xl shadow-lg">
-                            <thead>
-                                <tr>
-                                    <th class="py-2 px-4 border-b">ID</th>
-                                    <th class="py-2 px-4 border-b">First Name</th>
-                                    <th class="py-2 px-4 border-b">Last Name</th>
-                                    <th class="py-2 px-4 border-b">Email</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($search_results as $result): ?>
-                                    <tr>
-                                        <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($result['idno']); ?></td>
-                                        <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($result['firstname']); ?></td>
-                                        <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($result['lastname']); ?></td>
-                                        <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($result['email']); ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                <?php else: ?>
-                    <p class="text-red-500">No results found.</p>
-                <?php endif; ?>
+    <div class="main-content">
+        <div class="text-center text-2xl font-bold text-green-900 mb-6">Daily Analytics</div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="stat-card">
+                <h2><?php echo $total_sit_ins; ?></h2>
+                <p>Total Sit-ins Today</p>
+            </div>
+            <div class="stat-card">
+                <h2><?php echo $total_feedback; ?></h2>
+                <p>Feedback Received Today</p>
+            </div>
+            <div class="stat-card">
+                <h2><?php echo $average_rating; ?></h2>
+                <p>Average Rating Today</p>
             </div>
         </div>
     </div>

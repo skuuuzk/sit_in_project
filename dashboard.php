@@ -26,6 +26,8 @@ $query = "SELECT COUNT(*) AS unread_count FROM notifications WHERE idno = '$idno
 $result = mysqli_query($conn, $query);
 $notification_data = mysqli_fetch_assoc($result);
 $unread_count = $notification_data['unread_count'] ?? 0;
+$currentPage = basename($_SERVER['PHP_SELF']);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,17 +35,20 @@ $unread_count = $notification_data['unread_count'] ?? 0;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css"> 
+   
 </head>
 <body class="bg-cover bg-center h-screen flex" style="background-image: url('img/5.jpg');">
     <nav class="w-60 bg-green-700 bg-opacity-60 text-green-900 p-5 rounded-r-2xl shadow-lg fixed top-0 left-0 h-full">
         <div class="logo text-center mb-6">
             <img src="<?php echo htmlspecialchars($profile_pic); ?>" alt="Profile" class="w-24 h-24 object-cover rounded-full border-2 border-green-800 mx-auto">
             <p class="mt-2 text-white font-bold"><?php echo htmlspecialchars($full_name); ?></p>
-            <p class="text-sm text-gray-200"><strong>Session:</strong> <?php echo htmlspecialchars($session_count); ?></p>
+            <p class="text-sm text-gray-200"><strong>Session:</strong> <?php echo htmlspecialchars($session_count); ?></p>  
         </div>
-        <a href="dashboard.php" class="flex items-center text-white font-medium mb-5 p-3 rounded hover:bg-green-800 active:bg-green-900">
+        <a href="dashboard.php"    class="flex items-center text-white font-medium mb-5 p-3 rounded hover:bg-green-800 <?php echo ($currentPage == 'dashboard.php') ? 'bg-green-800' : ''; ?>">
             <i class="fas fa-user mr-3"></i> Home
         </a>
         <a href="edit.php" class="flex items-center text-white font-medium mb-5 p-3 rounded hover:bg-green-800">
@@ -64,6 +69,9 @@ $unread_count = $notification_data['unread_count'] ?? 0;
     </nav>
 
     <div class="flex-1 p-6 ml-60 space-y-6">
+        <div class="flex-1 space-y-6">
+            <div class="text-left text-2xl font-bold text-green-900">Dashboard</div>
+        </div>
         <div class="grid grid-cols-2 gap-6">
             <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg">
                 <h2 class="text-xl font-bold text-green-900 mb-4">Announcements</h2>
@@ -84,9 +92,25 @@ $unread_count = $notification_data['unread_count'] ?? 0;
             <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg">
                 <h2 class="text-xl font-bold text-green-900 mb-4">Rules and Regulations</h2>
                 <div class="space-y-4 max-h-72 overflow-y-auto">
+                    <p class="text-sm text-gray-700">To avoid embarrassment and maintain camaraderie with your friends and superiors at our laboratories, please observe the following:</p>
                     <p class="text-sm text-gray-700">1. Maintain silence, proper decorum, and discipline inside the laboratory.</p>
                     <p class="text-sm text-gray-700">2. Games are not allowed inside the lab.</p>
                     <p class="text-sm text-gray-700">3. Surfing the Internet is allowed only with the permission of the instructor.</p>
+                    <p class="text-sm text-gray-700">4. Getting access to other websites not related to the course (especially pornographic and illicit sites) is strictly prohibited.</p>
+                    <p class="text-sm text-gray-700">5. Deleting computer files and changing the set-up of the computer is a major offense.</p>
+                    <p class="text-sm text-gray-700">6. Observe computer time usage carefully. A fifteen-minute allowance is given for each use. Otherwise, the unit will be given to those who wish to "sit-in".</p>
+                    <p class="text-sm text-gray-700">7. Observe proper decorum while inside the laboratory.</p>
+                    <p class="text-sm text-gray-700">a. Do not get inside the lab unless the instructor is present.</p>
+                    <p class="text-sm text-gray-700">b. All bags, knapsacks, and the likes must be deposited at the counter.</p>
+                    <p class="text-sm text-gray-700">c. Follow the seating arrangement of your instructor.</p>
+                    <p class="text-sm text-gray-700">d. At the end of class, all software programs must be closed.</p>
+                    <p class="text-sm text-gray-700">e. Return all chairs to their proper places after using.</p>
+                    <br>
+                    <p class="text-sm text-gray-700">8. Chewing gum, eating, drinking, smoking, and other forms of vandalism are prohibited inside the lab.</p>
+                    <p class="text-sm text-gray-700">9. Anyone causing a continual disturbance will be asked to leave the lab. Acts or gestures offensive to the members of the community, including public display of physical intimacy, are not tolerated.</p>
+                    <p class="text-sm text-gray-700">10. Persons exhibiting hostile or threatening behavior such as yelling, swearing, or disregarding requests made by lab personnel will be asked to leave the lab.</p>
+                    <p class="text-sm text-gray-700">11. For serious offense, the lab personnel may call the Civil Security Office (CSU) for assistance.</p>
+                    <p class="text-sm text-gray-700">12. Any technical problem or difficulty must be addressed to the laboratory supervisor, student assistant or instructor immediately. </p>
                 </div>
             </div>
         </div>

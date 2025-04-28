@@ -18,6 +18,17 @@ ini_set('memory_limit', '1G'); // Set memory limit to 1GB
 // Initialize variables
 $filter_lab = $_GET['lab'] ?? '';
 $filter_purpose = $_GET['purpose'] ?? '';
+$filter_date = $_GET['date'] ?? '';
+// Fetch admin username
+$admin_id = $_SESSION['admin_id'];
+$query = "SELECT username FROM admins WHERE id = ?";
+$stmt->bind_param("i", $admin_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$admin = $result->fetch_assoc();
+$stmt->close();
+
+$username = $admin['username'] ?? 'Admin';
 
 // Fetch filtered sit-in records
 $query = "SELECT r.idno, CONCAT(u.firstname, ' ', u.lastname) AS student_name, r.purpose, r.lab, r.time_in, r.time_out 
@@ -31,6 +42,9 @@ if (!empty($filter_lab)) {
 }
 if (!empty($filter_purpose)) {
     $conditions[] = "r.purpose = '" . mysqli_real_escape_string($conn, $filter_purpose) . "'";
+}
+if (!empty($filter_date)) {
+    $conditions[] = "DATE(r.time_in) = '" . mysqli_real_escape_string($conn, $filter_date) . "'";
 }
 
 if (!empty($conditions)) {
@@ -145,45 +159,127 @@ if (isset($_POST['export_pdf'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="path/to/your/script.js" defer></script>
+    <link rel="stylesheet" href="style.css"> 
+    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+       <!-- Dropdown CSS -->
+       <style>
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #f9f9f9;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            z-index: 10;
+        }
+
+        .dropdown-content li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .dropdown-content li a {
+            text-decoration: none;
+            color: black;
+        }
+
+        .dropdown-content li a:hover {
+            background-color: #ddd;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+    </style>
+    <script>
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            const isVisible = dropdown.classList.contains('show');
+            closeAllDropdowns(); // Close other dropdowns
+            if (!isVisible) {
+                dropdown.classList.add('show');
+            }
+        }
+
+        function closeAllDropdowns() {
+            const dropdowns = document.querySelectorAll('.dropdown-content');
+            dropdowns.forEach(dropdown => dropdown.classList.remove('show'));
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function (event) {
+            if (!event.target.closest('.relative')) {
+                closeAllDropdowns();
+            }
+        });
+    </script>
 </head>
 <body class="bg-cover bg-center h-screen flex" style="background-image: url('img/5.jpg');">
-    <nav class="w-60 bg-green-700 bg-opacity-60 text-green-900 p-5 rounded-r-2xl shadow-lg fixed top-0 left-0 h-full">
-        <div class="logo text-center mb-5">
-            <img src="img/ccs.png" alt="Logo" class="w-24 h-auto mx-auto mb-5 rounded-full border-2 border-green-900">
+<nav class="w-60 bg-green-700 bg-opacity-60 text-green-900 p-5 rounded-r-2xl shadow-lg fixed top-0 left-0 h-full">
+        <div class="logo text-center mb-6">
+            <img src="img/ccs.png" alt="Logo" class="w-20 h-20 object-cover rounded-full border-2 border-green-800 mx-auto">
+            <p class="mt-2 text-white font-bold"><?php echo htmlspecialchars($username); ?></p>
         </div>
-        <a href="a-dashboard.php" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded hover:bg-green-200">
-            <i class="fas fa-user mr-2"></i> Home
+        <a href="a-dashboard.php" class="flex items-center text-green-900 font-medium mb-5 p-3 rounded hover:bg-green-200 hover:text-green-700 active:bg-green-300">
+            <i class="fas fa-user mr-3"></i> Home
         </a>
-        <a href="#" onclick="openModal('searchModal')" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded hover:bg-green-200">
-            <i class="fas fa-search mr-2"></i> Search
+        <a href="#" onclick="openModal('searchModal')" class="flex items-center text-green-900 font-medium mb-5 p-3 rounded hover:bg-green-200 hover:text-green-700">
+            <i class="fas fa-search mr-3"></i> Search
         </a>
-        <a href="a-students.php" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded hover:bg-green-200">
-            <i class="fas fa-users mr-2"></i> Students
+        <a href="a-students.php" class="flex items-center text-green-900 font-medium mb-5 p-3 rounded hover:bg-green-200 hover:text-green-700">
+            <i class="fas fa-users mr-3"></i> Students
         </a>
-        <a href="a-currents.php" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded hover:bg-green-200">
-            <i class="fas fa-user-clock mr-2"></i> Current Sit-in
+
+        <!-- Dropdown for View (clickable) -->
+        <div class="relative">
+                <a href="#" class="flex items-center text-green-900 font-medium mb-5 p-3 rounded hover:bg-green-200 hover:text-green-700" onclick="toggleDropdown('viewDropdown'); return false;">
+                    <i class="fas fa-eye mr-3"></i> View <i class="fas fa-caret-down ml-2"></i>
+                </a>
+                <ul id="viewDropdown" class="dropdown-content bg-green-200 text-green-900 w-full p-2 rounded-lg shadow-md">
+                    <li><a href="a-currents.php" class="block p-3">Current Sit-in</a></li>
+                    <li><a href="a-vrecords.php" class="block p-3">Visit Records</a></li>
+                    <li><a href="a-feedback.php" class="block p-3">Feedback</a></li>
+                    <li><a href="a-daily-analytics.php" class="block p-3">Daily Analytics</a></li>
+                </ul>
+            </div>
+
+            <!-- Dropdown for Lab (clickable) -->
+            <div class="relative">
+                <a href="#" class="flex items-center text-green-900 font-medium mb-5 p-3 rounded hover:bg-green-200 hover:text-green-700" onclick="toggleDropdown('labDropdown'); return false;">
+                    <i class="fas fa-laptop mr-3"></i> Lab <i class="fas fa-caret-down ml-2"></i>
+                </a>
+                <ul id="labDropdown" class="dropdown-content bg-green-200 text-green-900 w-full p-2 rounded-lg shadow-md">
+                    <li><a href="a-computer-control.php" class="block p-3">Computer Control</a></li>
+                    <li><a href="a-leaderboard.php" class="block p-3">Leaderboard</a></li>
+                    <li><a href="a-resources.php" class="block p-3">Resources</a></li>
+                </ul>
+            </div>
+                
+        <a href="a-reports.php" class="flex items-center text-green-900 font-medium mb-5 p-3 rounded hover:bg-green-200 hover:text-green-700">
+            <i class="fas fa-chart-line mr-3"></i> Reports
         </a>
-        <a href="a-vrecords.php" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded hover:bg-green-200">
-            <i class="fas fa-book mr-2"></i> Visit Records
-        </a>
-        <a href="a-feedback.php" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded hover:bg-green-200">
-            <i class="fas fa-comments mr-2"></i> Feedback
-        </a>
-        <a href="a-reports.php" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded bg-green-200 font-bold">
-            <i class="fas fa-chart-line mr-2"></i> Reports
-        </a>
-        <a href="a-logout.php" class="flex items-center text-green-900 text-lg mb-6 p-2 rounded hover:bg-green-200">
-            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+        <a href="a-logout.php" class="flex items-center text-green-900 font-medium mb-5 p-3 rounded hover:bg-green-200 hover:text-green-700">
+            <i class="fas fa-sign-out-alt mr-3"></i> Logout
         </a>
     </nav>
 
     <div class="flex-1 p-6 ml-60 space-y-6">
         <div class="text-center text-2xl font-bold text-green-900">Generate Reports</div>
         <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg">
-            <form method="get" class="mb-6 flex space-x-4">
+            <!-- Filter Section -->
+            <form method="get" class="mb-6 grid grid-cols-4 gap-4">
                 <div>
-                    <label for="lab" class="block text-green-900 mb-2">Filter by Lab:</label>
-                    <select name="lab" id="lab" class="p-2 rounded border border-green-900">
+                    <label for="date" class="block text-green-900 mb-2">Select Date:</label>
+                    <input type="date" name="date" id="date" value="<?php echo htmlspecialchars($filter_date); ?>" class="p-2 rounded border border-green-900 w-full">
+                </div>
+                <div>
+                    <label for="lab" class="block text-green-900 mb-2">Select Laboratory:</label>
+                    <select name="lab" id="lab" class="p-2 rounded border border-green-900 w-full">
                         <option value="">All</option>
                         <option value="Lab 530" <?php if ($filter_lab == 'Lab 530') echo 'selected'; ?>>Lab 530</option>
                         <option value="Lab 524" <?php if ($filter_lab == 'Lab 524') echo 'selected'; ?>>Lab 524</option>
@@ -193,8 +289,8 @@ if (isset($_POST['export_pdf'])) {
                     </select>
                 </div>
                 <div>
-                    <label for="purpose" class="block text-green-900 mb-2">Filter by Purpose:</label>
-                    <select name="purpose" id="purpose" class="p-2 rounded border border-green-900">
+                    <label for="purpose" class="block text-green-900 mb-2">Select Purpose:</label>
+                    <select name="purpose" id="purpose" class="p-2 rounded border border-green-900 w-full">
                         <option value="">All</option>
                         <option value="Python" <?php if ($filter_purpose == 'Python') echo 'selected'; ?>>Python</option>
                         <option value="Java" <?php if ($filter_purpose == 'Java') echo 'selected'; ?>>Java</option>
@@ -202,30 +298,39 @@ if (isset($_POST['export_pdf'])) {
                         <option value="C Programming" <?php if ($filter_purpose == 'C Programming') echo 'selected'; ?>>C Programming</option>
                     </select>
                 </div>
-                <button type="submit" class="self-end bg-green-700 text-white p-2 rounded">Filter</button>
+                <div class="flex items-end space-x-2">
+                    <button type="submit" class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">Search</button>
+                    <a href="a-reports.php" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Reset</a>
+                </div>
             </form>
 
+            <!-- Export Buttons -->
             <form method="post" class="mb-6 flex space-x-4">
+                <button type="submit" name="export_csv" class="bg-blue-500 text-white p-2 rounded flex items-center">
+                    <i class="fas fa-file-csv mr-2"></i> Export CSV
+                </button>
                 <button type="submit" name="export_excel" class="bg-green-700 text-white p-2 rounded flex items-center">
-                    <i class="fas fa-file-excel mr-2"></i> Export to Excel
+                    <i class="fas fa-file-excel mr-2"></i> Export Excel
                 </button>
                 <button type="submit" name="export_pdf" class="bg-red-700 text-white p-2 rounded flex items-center">
-                    <i class="fas fa-file-pdf mr-2"></i> Export to PDF
+                    <i class="fas fa-file-pdf mr-2"></i> Export PDF
                 </button>
                 <button type="button" onclick="printTable()" class="bg-yellow-500 text-white p-2 rounded flex items-center">
-                    <i class="fas fa-print mr-2"></i> Print Records
+                    <i class="fas fa-print mr-2"></i> Print Report
                 </button>
             </form>
 
+            <!-- Table -->
             <table class="w-full border-collapse">
                 <thead>
                     <tr class="bg-green-700 text-white">
                         <th class="border p-2">ID Number</th>
                         <th class="border p-2">Name</th>
                         <th class="border p-2">Purpose</th>
-                        <th class="border p-2">Lab</th>
-                        <th class="border p-2">Time-in</th>
-                        <th class="border p-2">Time-out</th>
+                        <th class="border p-2">Laboratory</th>
+                        <th class="border p-2">Time In</th>
+                        <th class="border p-2">Time Out</th>
+                        <th class="border p-2">Date</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -238,11 +343,12 @@ if (isset($_POST['export_pdf'])) {
                                 <td class="border p-2"><?php echo htmlspecialchars($record['lab']); ?></td>
                                 <td class="border p-2"><?php echo htmlspecialchars($record['time_in']); ?></td>
                                 <td class="border p-2"><?php echo htmlspecialchars($record['time_out']); ?></td>
+                                <td class="border p-2"><?php echo htmlspecialchars(date('d/m/Y', strtotime($record['time_in']))); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" class="text-center p-2">No records found.</td>
+                            <td colspan="7" class="text-center p-2">No records found.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -250,12 +356,12 @@ if (isset($_POST['export_pdf'])) {
 
             <!-- Pagination -->
             <div class="flex justify-between items-center mt-4">
-                <a href="?page=<?php echo max(1, $current_page - 1); ?>&lab=<?php echo urlencode($filter_lab); ?>&purpose=<?php echo urlencode($filter_purpose); ?>" 
+                <a href="?page=<?php echo max(1, $current_page - 1); ?>&lab=<?php echo urlencode($filter_lab); ?>&purpose=<?php echo urlencode($filter_purpose); ?>&date=<?php echo urlencode($filter_date); ?>" 
                    class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 <?php echo $current_page <= 1 ? 'opacity-50 pointer-events-none' : ''; ?>">
                     Previous
                 </a>
                 <span class="text-green-900">Page <?php echo $current_page; ?> of <?php echo $total_pages; ?></span>
-                <a href="?page=<?php echo min($total_pages, $current_page + 1); ?>&lab=<?php echo urlencode($filter_lab); ?>&purpose=<?php echo urlencode($filter_purpose); ?>" 
+                <a href="?page=<?php echo min($total_pages, $current_page + 1); ?>&lab=<?php echo urlencode($filter_lab); ?>&purpose=<?php echo urlencode($filter_purpose); ?>&date=<?php echo urlencode($filter_date); ?>" 
                    class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 <?php echo $current_page >= $total_pages ? 'opacity-50 pointer-events-none' : ''; ?>">
                     Next
                 </a>
