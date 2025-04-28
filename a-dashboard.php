@@ -213,6 +213,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_points'])) {
                     <li><a href="a-resources.php" class="block p-3">Resources</a></li>
                 </ul>
             </div>
+
+        <a href="a-reservation.php" class="flex items-center text-green-900 font-medium mb-5 p-3 rounded hover:bg-green-200 hover:text-green-700">
+            <i class="fas fa-chart-line mr-3"></i> Reservation
+        </a>
                 
         <a href="a-reports.php" class="flex items-center text-green-900 font-medium mb-5 p-3 rounded hover:bg-green-200 hover:text-green-700">
             <i class="fas fa-chart-line mr-3"></i> Reports
@@ -226,21 +230,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_points'])) {
         <div class="text-center text-2xl font-bold text-green-900">Admin Dashboard</div>
 
         <div class="grid grid-cols-3 gap-6">
-            <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg text-center text-green-900">
+            <a href="a-daily-analytics.php" class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg text-center text-green-900 hover:bg-opacity-30 transition">
                 <i class="fas fa-user-graduate text-4xl mb-3 text-green-700"></i>
                 <p class="text-lg">Total Students</p>
                 <h2 class="text-2xl font-bold"><?php echo $students_count; ?></h2>
-            </div>
-            <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg text-center text-green-900">
+            </a>
+            <a href="a-daily-analytics.php" class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg text-center text-green-900 hover:bg-opacity-30 transition">
                 <i class="fas fa-desktop text-4xl mb-3 text-green-700"></i>
                 <p class="text-lg">Active Sessions</p>
                 <h2 class="text-2xl font-bold"><?php echo $current_sit_in; ?></h2>
-            </div>
-            <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg text-center text-green-900">
+            </a>
+            <a href="a-daily-analytics.php" class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg text-center text-green-900 hover:bg-opacity-30 transition">
                 <i class="fas fa-undo text-4xl mb-3 text-green-700"></i>
                 <p class="text-lg">Total Sessions</p>
                 <h2 class="text-2xl font-bold"><?php echo $total_sit_in; ?></h2>
-            </div>
+            </a>
         </div>
 
         <div class="space-y-6">

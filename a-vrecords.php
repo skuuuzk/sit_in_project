@@ -162,7 +162,10 @@ $stmt->close();
         <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg">
             <h3 class="text-xl font-bold text-green-900 mb-4">Visit History</h3>
             <!-- Search Bar -->
-            <form method="GET" action="a-vrecords.php" class="mb-6 text-center">
+            <form method="GET" action="a-vrecords.php" class="mb-6 flex items-center justify-center">
+                <a href="a-vrecords.php" class="mr-2 text-green-700 hover:text-green-900">
+                    <i class="fas fa-arrow-left text-2xl"></i>
+                </a>
                 <input type="text" name="search_id" placeholder="Enter ID Number" value="<?php echo htmlspecialchars($search_id ?? ''); ?>" 
                        class="p-2 border border-gray-300 rounded w-3/4">
                 <button type="submit" class="p-2 bg-green-500 text-white rounded ml-2 hover:bg-green-600">

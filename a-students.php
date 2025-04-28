@@ -18,10 +18,50 @@ $stmt->close();
 
 $username = $admin['username'] ?? 'Admin';
 
-// Fetch student information
-$query = "SELECT idno, firstname, lastname, year, course, session, username, email FROM users";
-$result = mysqli_query($conn, $query);
-$students = mysqli_fetch_all($result, MYSQLI_ASSOC);
+// Handle search query
+$search_idno = $_GET['search_idno'] ?? null;
+
+// Handle pagination
+$limit = 8; // Number of students per page
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+
+// Fetch student information with search and pagination
+if ($search_idno) {
+    $query = "SELECT idno, firstname, lastname, year, course, session, username, email 
+              FROM users 
+              WHERE idno LIKE ? 
+              LIMIT ? OFFSET ?";
+    $stmt = $conn->prepare($query);
+    $search_param = "%$search_idno%";
+    $stmt->bind_param("sii", $search_param, $limit, $offset);
+} else {
+    $query = "SELECT idno, firstname, lastname, year, course, session, username, email 
+              FROM users 
+              LIMIT ? OFFSET ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ii", $limit, $offset);
+}
+$stmt->execute();
+$result = $stmt->get_result();
+$students = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+
+// Fetch total number of students for pagination
+if ($search_idno) {
+    $count_query = "SELECT COUNT(*) AS total FROM users WHERE idno LIKE ?";
+    $stmt = $conn->prepare($count_query);
+    $stmt->bind_param("s", $search_param);
+} else {
+    $count_query = "SELECT COUNT(*) AS total FROM users";
+    $stmt = $conn->prepare($count_query);
+}
+$stmt->execute();
+$result = $stmt->get_result();
+$total_students = $result->fetch_assoc()['total'];
+$stmt->close();
+
+$total_pages = ceil($total_students / $limit);
 
 // Handle reset all sessions action
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reset_sessions'])) {
@@ -159,12 +199,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_student'])) {
             border-radius: 12px 12px 0 0;
         }
 
-        /* Table container for scrollable body */
-        .table-container {
-            max-height: 400px; /* Set a fixed height for the table container */
-            overflow-y: auto; /* Make the table body scrollable */
-        }
-
         /* Ensure the table and other content are responsive */
         table {
             width: 100%;
@@ -277,7 +311,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_student'])) {
             <!-- Fixed header and action bar -->
             <div class="fixed-header">
                 <h3 class="text-xl font-bold text-green-900 mb-4">Student Records</h3>
-                <div class="flex justify-between">
+                <div class="flex justify-between items-center">
+                    <form method="GET" action="a-students.php" class="flex items-center">
+                        <input type="text" name="search_idno" placeholder="Search by ID Number" value="<?php echo htmlspecialchars($search_idno ?? ''); ?>" 
+                               class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <button type="submit" class="ml-2 bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">Search</button>
+                    </form>
                     <button onclick="openModal('addStudentModal')" class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">Add Students</button>
                     <form action="a-students.php" method="post">
                         <button type="submit" name="reset_sessions" class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">Reset All Sessions</button>
@@ -285,7 +324,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_student'])) {
                 </div>
             </div>
             <!-- Table content -->
-            <div class="table-container">
+            <div>
                 <table>
                     <thead>
                         <tr>
@@ -298,24 +337,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_student'])) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($students as $student): ?>
+                        <?php if (!empty($students)): ?>
+                            <?php foreach ($students as $student): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($student['idno']); ?></td>
+                                    <td><?php echo htmlspecialchars($student['firstname'] . ' '  . $student['lastname']); ?></td>
+                                    <td><?php echo htmlspecialchars($student['year']); ?></td>
+                                    <td><?php echo htmlspecialchars($student['course']); ?></td>
+                                    <td><?php echo htmlspecialchars($student['session']); ?></td>
+                                    <td class="flex space-x-2">
+                                        <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($student)); ?>)" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Edit</button>
+                                        <form action="a-students.php" method="post">
+                                            <input type="hidden" name="idno" value="<?php echo htmlspecialchars($student['idno']); ?>">
+                                            <button type="submit" name="delete_student" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($student['idno']); ?></td>
-                                <td><?php echo htmlspecialchars($student['firstname'] . ' '  . $student['lastname']); ?></td>
-                                <td><?php echo htmlspecialchars($student['year']); ?></td>
-                                <td><?php echo htmlspecialchars($student['course']); ?></td>
-                                <td><?php echo htmlspecialchars($student['session']); ?></td>
-                                <td class="flex space-x-2">
-                                    <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($student)); ?>)" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Edit</button>
-                                    <form action="a-students.php" method="post">
-                                        <input type="hidden" name="idno" value="<?php echo htmlspecialchars($student['idno']); ?>">
-                                        <button type="submit" name="delete_student" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Delete</button>
-                                    </form>
-                                </td>
+                                <td colspan="6" class="text-center p-4">No students found.</td>
                             </tr>
-                        <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
+            </div>
+            <!-- Pagination -->
+            <div class="flex justify-center mt-4">
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <a href="a-students.php?page=<?php echo $i; ?><?php echo $search_idno ? '&search_idno=' . urlencode($search_idno) : ''; ?>" 
+                       class="px-4 py-2 mx-1 rounded <?php echo $i == $page ? 'bg-green-700 text-white' : 'bg-gray-200 text-green-900'; ?>">
+                        <?php echo $i; ?>
+                    </a>
+                <?php endfor; ?>
             </div>
         </div>
     </div>

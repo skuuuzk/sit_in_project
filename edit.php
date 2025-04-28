@@ -58,8 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Update user details
-    $stmt = $conn->prepare("UPDATE users SET firstname = ?, lastname = ?, year = ?, course = ?, email = ?, address = ? WHERE idno = ?");
-    $stmt->bind_param("ssssssi", $firstname, $lastname, $year, $course, $email, $address, $idno);
+    $stmt = $conn->prepare("UPDATE users SET firstname = ?, midname = ?, lastname = ?, year = ?, course = ?, email = ?, address = ? WHERE idno = ?");
+    $stmt->bind_param("sssssssi", $firstname, $midname, $lastname, $year, $course, $email, $address, $idno);
 
     if ($stmt->execute()) {
         $stmt->close();
@@ -70,6 +70,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->close();
     }
 }
+
+// Check for success status
+$status = $_GET['status'] ?? null;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -151,30 +154,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="flex-1">
                 <label for="year" class="block font-bold text-green-900">Year Level:</label>
                 <select id="year" name="year" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <option value="1st" <?php if ($user['YEAR'] == '1st') echo 'selected'; ?>>1st</option>
-                    <option value="2nd" <?php if ($user['YEAR'] == '2nd') echo 'selected'; ?>>2nd</option>
-                    <option value="3rd" <?php if ($user['YEAR'] == '3rd') echo 'selected'; ?>>3rd</option>
-                    <option value="4th" <?php if ($user['YEAR'] == '4th') echo 'selected'; ?>>4th</option>
+                    <option value="1st" <?php if ($user['YEAR'] === '1st') echo 'selected'; ?>>1st</option>
+                    <option value="2nd" <?php if ($user['YEAR'] === '2nd') echo 'selected'; ?>>2nd</option>
+                    <option value="3rd" <?php if ($user['YEAR'] === '3rd') echo 'selected'; ?>>3rd</option>
+                    <option value="4th" <?php if ($user['YEAR'] === '4th') echo 'selected'; ?>>4th</option>
                 </select>
             </div>
             <div class="flex-1">
                 <label for="course" class="block font-bold text-green-900">Course:</label>
                 <select id="course" name="course" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <option value="BSIT" <?php if ($user['COURSE'] == 'BSIT') echo 'selected'; ?>>Bachelor of Science in Information Technology</option>
-                        <option value="BSCS">Bachelor of Science in Computer Science</option>
-                        <option value="BSECE">Bachelor of Science in Electronics Engineering</option>
-                        <option value="BSCE">Bachelor of Science in Civil Engineering</option>
-                        <option value="BSME">Bachelor of Science in Mechanical Engineering</option>
-                        <option value="BSEE">Bachelor of Science in Electrical Engineering</option>
-                        <option value="BSBA">Bachelor of Science in Business Administration</option>
-                        <option value="BSA">Bachelor of Science in Accountancy</option>
-                        <option value="BSHM">Bachelor of Science in Hospitality Management</option>
-                        <option value="BSTM">Bachelor of Science in Tourism Management</option>
-                        <option value="BSN">Bachelor of Science in Nursing</option>
-                        <option value="BSED">Bachelor of Secondary Education</option>
-                        <option value="BEED">Bachelor of Elementary Education</option>
-                        <option value="BSPSY">Bachelor of Science in Psychology</option>
-                    </select>
+                    <option value="BSIT" <?php if ($user['COURSE'] === 'BSIT') echo 'selected'; ?>>Bachelor of Science in Information Technology</option>
+                    <option value="BSCS" <?php if ($user['COURSE'] === 'BSCS') echo 'selected'; ?>>Bachelor of Science in Computer Science</option>
+                    <option value="BSECE" <?php if ($user['COURSE'] === 'BSECE') echo 'selected'; ?>>Bachelor of Science in Electronics Engineering</option>
+                    <option value="BSCE" <?php if ($user['COURSE'] === 'BSCE') echo 'selected'; ?>>Bachelor of Science in Civil Engineering</option>
+                    <option value="BSME" <?php if ($user['COURSE'] === 'BSME') echo 'selected'; ?>>Bachelor of Science in Mechanical Engineering</option>
+                    <option value="BSEE" <?php if ($user['COURSE'] === 'BSEE') echo 'selected'; ?>>Bachelor of Science in Electrical Engineering</option>
+                    <option value="BSBA" <?php if ($user['COURSE'] === 'BSBA') echo 'selected'; ?>>Bachelor of Science in Business Administration</option>
+                    <option value="BSA" <?php if ($user['COURSE'] === 'BSA') echo 'selected'; ?>>Bachelor of Science in Accountancy</option>
+                    <option value="BSHM" <?php if ($user['COURSE'] === 'BSHM') echo 'selected'; ?>>Bachelor of Science in Hospitality Management</option>
+                    <option value="BSTM" <?php if ($user['COURSE'] === 'BSTM') echo 'selected'; ?>>Bachelor of Science in Tourism Management</option>
+                    <option value="BSN" <?php if ($user['COURSE'] === 'BSN') echo 'selected'; ?>>Bachelor of Science in Nursing</option>
+                    <option value="BSED" <?php if ($user['COURSE'] === 'BSED') echo 'selected'; ?>>Bachelor of Secondary Education</option>
+                    <option value="BEED" <?php if ($user['COURSE'] === 'BEED') echo 'selected'; ?>>Bachelor of Elementary Education</option>
+                    <option value="BSPSY" <?php if ($user['COURSE'] === 'BSPSY') echo 'selected'; ?>>Bachelor of Science in Psychology</option>
+                </select>
             </div>
         </div>
 
@@ -200,6 +203,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </form>
     </div>
+
+    <?php if ($status === 'success'): ?>
+        <div id="toast" class="fixed top-10 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg">
+            Profile Changed Successfully!
+        </div>
+        <script>
+            setTimeout(() => {
+                document.getElementById('toast').style.display = 'none';
+            }, 3000); // Hide toast after 3 seconds
+        </script>
+    <?php endif; ?>
 
     <script>
         // Image preview function

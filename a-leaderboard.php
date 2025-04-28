@@ -47,32 +47,38 @@ $username = $admin['username'] ?? 'Admin';
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_points'])) {
     $idno = $_POST['idno'];
 
-    // Fetch current points and sessions
-    $query = "SELECT points, session FROM users WHERE idno = ?";
+    // Fetch the most recent reservation for the student
+    $query = "SELECT id, points FROM reservations WHERE idno = ? AND status = 'completed' ORDER BY time_in DESC LIMIT 1";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $idno);
     $stmt->execute();
     $result = $stmt->get_result();
-    $user = $result->fetch_assoc();
+    $reservation = $result->fetch_assoc();
     $stmt->close();
 
-    if ($user) {
-        $current_points = $user['points'];
-        $current_sessions = $user['session'];
+    if ($reservation) {
+        $reservation_id = $reservation['id'];
+        $current_points = $reservation['points'];
 
-        // Add 1 point
+        // Increment the points
         $current_points += 1;
 
-        // Check if points reach 3
         if ($current_points >= 3) {
-            $current_points = 0; // Reset points
-            $current_sessions += 1; // Add 1 session
+            // Reset points to 0 and increment session count
+            $current_points = 0;
+
+            // Update the session count for the student
+            $update_session_query = "UPDATE users SET session = session + 1 WHERE idno = ?";
+            $stmt = $conn->prepare($update_session_query);
+            $stmt->bind_param("i", $idno);
+            $stmt->execute();
+            $stmt->close();
         }
 
-        // Update points and sessions in the database
-        $update_query = "UPDATE users SET points = ?, session = ? WHERE idno = ?";
-        $stmt = $conn->prepare($update_query);
-        $stmt->bind_param("iii", $current_points, $current_sessions, $idno);
+        // Update the points for the most recent reservation
+        $update_points_query = "UPDATE reservations SET points = ? WHERE id = ?";
+        $stmt = $conn->prepare($update_points_query);
+        $stmt->bind_param("ii", $current_points, $reservation_id);
         $stmt->execute();
         $stmt->close();
 
@@ -80,11 +86,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_points'])) {
         header("Location: a-leaderboard.php?points_success=1");
         exit();
     } else {
-        // Redirect with error message if user not found
+        // Redirect with error message if no reservation is found
         header("Location: a-leaderboard.php?points_error=1");
         exit();
     }
 }
+
+// Handle search query for recent sit-ins
+$search_recent_idno = $_GET['search_recent_idno'] ?? null;
+
+// Fetch recent sit-ins (only the latest activity for each student)
+if ($search_recent_idno) {
+    $recent_sitins_query = "SELECT r.idno, CONCAT(u.firstname, ' ', u.lastname) AS student_name, MAX(r.time_in) AS time_in, r.points 
+                            FROM reservations r 
+                            JOIN users u ON r.idno = u.idno 
+                            WHERE r.status = 'completed' AND r.idno LIKE ? 
+                            GROUP BY r.idno 
+                            ORDER BY time_in DESC";
+    $stmt = $conn->prepare($recent_sitins_query);
+    $search_param = "%$search_recent_idno%";
+    $stmt->bind_param("s", $search_param);
+} else {
+    $recent_sitins_query = "SELECT r.idno, CONCAT(u.firstname, ' ', u.lastname) AS student_name, MAX(r.time_in) AS time_in, r.points 
+                            FROM reservations r 
+                            JOIN users u ON r.idno = u.idno 
+                            WHERE r.status = 'completed' 
+                            GROUP BY r.idno 
+                            ORDER BY time_in DESC";
+    $stmt = $conn->prepare($recent_sitins_query);
+}
+$stmt->execute();
+$result = $stmt->get_result();
+$recent_sitins = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -291,6 +325,54 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['assign_points'])) {
                 <?php else: ?>
                     <p class="text-center">No data available for the leaderboard.</p>
                 <?php endif; ?>
+            </div>
+
+            <!-- Recent Sit-ins -->
+            <div class="bg-white bg-opacity-20 p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-bold text-green-900 mb-4">Recent Sit-ins</h3>
+                <!-- Search Bar -->
+                <form method="GET" action="a-leaderboard.php" class="mb-6 flex items-center">
+                    <input type="text" name="search_recent_idno" placeholder="Search by ID Number" value="<?php echo htmlspecialchars($search_recent_idno ?? ''); ?>" 
+                           class="p-2 border border-gray-300 rounded w-3/4">
+                    <button type="submit" class="p-2 bg-green-500 text-white rounded ml-2 hover:bg-green-600">
+                        Search
+                    </button>
+                </form>
+
+                <!-- Recent Sit-ins Table -->
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr>
+                            <th class="border-b p-3 text-green-900">ID Number</th>
+                            <th class="border-b p-3 text-green-900">Name</th>
+                            <th class="border-b p-3 text-green-900">Time In</th>
+                            <th class="border-b p-3 text-green-900">Points</th>
+                            <th class="border-b p-3 text-green-900">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($recent_sitins)): ?>
+                            <?php foreach ($recent_sitins as $sit_in): ?>
+                                <tr>
+                                    <td class="border-b p-3"><?php echo htmlspecialchars($sit_in['idno']); ?></td>
+                                    <td class="border-b p-3"><?php echo htmlspecialchars($sit_in['student_name']); ?></td>
+                                    <td class="border-b p-3"><?php echo htmlspecialchars($sit_in['time_in']); ?></td>
+                                    <td class="border-b p-3"><?php echo htmlspecialchars($sit_in['points']); ?></td>
+                                    <td class="border-b p-3">
+                                        <form method="post" class="flex items-center space-x-2">
+                                            <input type="hidden" name="idno" value="<?php echo htmlspecialchars($sit_in['idno']); ?>">
+                                            <button type="submit" name="assign_points" class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800">Add 1 Point</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5" class="text-center p-3">No recent sit-ins found.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             </div>
         </div>
     </body>
